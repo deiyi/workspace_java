@@ -21,12 +21,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import java.awt.Label;
-import java.awt.Button;
 import javax.swing.JList;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainWindow {
 
@@ -55,17 +50,16 @@ public class MainWindow {
 	private JScrollPane calculationMaterialsScrollPanel;
 	private JPanel libraryManagementPanel;
 	private JPanel materialManagementPanel;
-	private Label libraryNameLabel;
-	private Button openLibraryButton;
-	private Button newLibraryButton;
-	private JList materialsOnLibraryList;
-	private Button deleteMaterialButton;
-	private Button addMaterialButton;
+	private JLabel libraryNameLabel;
+	private JButton openLibraryButton;
+	private JButton newLibraryButton;
+	private JButton deleteMaterialButton;
+	private JButton addMaterialButton;
 	private JButton cancelButton;
 	private JButton saveAsButton;
 	private JTable materialPropertiesTable;
 	private JScrollPane materialPropertiesScrollPanel;
-	private JList list;
+	private JList materialsOnLibraryList;
 	private JList availableMaterialsList;
 	private JScrollPane availableMaterialsScrollPanel;
 	private JLabel selectMaterialLabel;
@@ -100,8 +94,8 @@ public class MainWindow {
 	private void initialize() {
 		// Initialize main frame
 		frame = new JFrame();
-		frame.setBounds(Constants.C_PREFERED_POSITION_X_AT_START, Constants.C_PREFERED_POSITION_Y_AT_START, 
-				Constants.C_PREFERED_SIZE_X, Constants.C_PREFERED_SIZE_Y);
+		frame.setBounds(Constants.C_MAIN_PREFERED_POSITION_X_AT_START, Constants.C_MAIN_PREFERED_POSITION_Y_AT_START, 
+				Constants.C_MAIN_PREFERED_SIZE_X, Constants.C_MAIN_PREFERED_SIZE_Y);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle(Constants.C_MAIN_WINDOW_TITLE);
 		
@@ -168,8 +162,8 @@ public class MainWindow {
 			
 			{
 				//String item[] = {"ASME mat1", "mat2", "KTA mat3", "mat4", "mat5", "mat6", "mat7", "mat8", "mat9"};
-				list = new JList();
-				calculationMaterialsScrollPanel.setViewportView(list);
+				materialsOnLibraryList = new JList();
+				calculationMaterialsScrollPanel.setViewportView(materialsOnLibraryList);
 			}
 			
 			calculationLibraryLabel = new JLabel(Constants.C_MATERIAL_LIBRARY_NAME);
@@ -203,6 +197,7 @@ public class MainWindow {
 			calculationMaterialsPanel.add(browseLibraryButton, gbc_browseLibraryButton);
 			
 			addLibraryToCalculationButton = new JButton(Constants.C_ADD_MATERIALS_FROM_LIBRARY_BUTTON);
+			addLibraryToCalculationButton.setEnabled(false);
 			addLibraryToCalculationButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					actionOnClicAddMaterialsToList();
@@ -322,7 +317,7 @@ public class MainWindow {
 			gbl_libraryManagementPanel.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 			libraryManagementPanel.setLayout(gbl_libraryManagementPanel);
 			
-			openLibraryButton = new Button(Constants.C_OPEN_LIBRARY_BUTTON);
+			openLibraryButton = new JButton(Constants.C_OPEN_LIBRARY_BUTTON);
 			openLibraryButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					actionOnClicOpenLibrary();
@@ -335,7 +330,7 @@ public class MainWindow {
 			gbc_openLibraryButton.gridy = 0;
 			libraryManagementPanel.add(openLibraryButton, gbc_openLibraryButton);
 			
-			newLibraryButton = new Button(Constants.C_NEW_LIBRARY_BUTTON);
+			newLibraryButton = new JButton(Constants.C_NEW_LIBRARY_BUTTON);
 			newLibraryButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					actionOnClicNewLibrary();
@@ -348,7 +343,8 @@ public class MainWindow {
 			gbc_newLibraryButton.gridy = 1;
 			libraryManagementPanel.add(newLibraryButton, gbc_newLibraryButton);
 			
-			deleteMaterialButton = new Button(Constants.C_DELETE_MATERIAL_BUTTON);
+			deleteMaterialButton = new JButton(Constants.C_DELETE_MATERIAL_BUTTON);
+			deleteMaterialButton.setEnabled(false);
 			deleteMaterialButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					actionOnClicDeleteMaterial();
@@ -375,7 +371,8 @@ public class MainWindow {
 			gbc_deleteMaterialButton.gridy = 3;
 			libraryManagementPanel.add(deleteMaterialButton, gbc_deleteMaterialButton);
 			
-			addMaterialButton = new Button(Constants.C_ADD_MATERIAL_BUTTON);
+			addMaterialButton = new JButton(Constants.C_ADD_MATERIAL_BUTTON);
+			addMaterialButton.setEnabled(false);
 			addMaterialButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					actionOnClicAddMaterial();
@@ -398,7 +395,7 @@ public class MainWindow {
 		}
 		
 		{
-			libraryNameLabel = new Label(Constants.C_MANAGED_LIBRARY_NAME_LABEL);
+			libraryNameLabel = new JLabel(Constants.C_MANAGED_LIBRARY_NAME_LABEL);
 			GridBagConstraints gbc_libraryNameLabel = new GridBagConstraints();
 			gbc_libraryNameLabel.anchor = GridBagConstraints.WEST;
 			gbc_libraryNameLabel.gridwidth = 2;
@@ -445,6 +442,7 @@ public class MainWindow {
 			materialPropertiesScrollPanel.setViewportView(materialPropertiesTable);
 			
 			cancelButton = new JButton(Constants.C_CANCEL_BUTTON);
+			cancelButton.setEnabled(false);
 			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					actionOnClicCancelLibraryOperation();
@@ -457,6 +455,7 @@ public class MainWindow {
 			materialManagementPanel.add(cancelButton, gbc_cancelButton);
 			
 			saveAsButton = new JButton(Constants.C_SAVE_LIBRARY_AS_BUTTON);
+			saveAsButton.setEnabled(false);
 			saveAsButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					actionOnClicSaveLibraryAs();
@@ -525,7 +524,8 @@ public class MainWindow {
 	 * Action executed when the About menu-item is clicked.
 	 */
 	private void actionOnClicAbout() {
-		
+		AboutCalSevWindow aboutWin = new AboutCalSevWindow();
+		aboutWin.setVisible(true);
 	}
 	
 	/**
