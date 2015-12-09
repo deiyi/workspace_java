@@ -41,11 +41,13 @@ public class AboutCalSevWindow extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
 			aboutInfoLabel = new JLabel(Constants.C_ABOUT_INFO);
 			contentPanel.add(aboutInfoLabel, BorderLayout.CENTER);
 		}
+		
 		{
 			buttonPanel = new JPanel();
 			buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));

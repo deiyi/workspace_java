@@ -3,10 +3,18 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
+import java.awt.Desktop;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.awt.event.ActionEvent;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -67,6 +75,7 @@ public class MainWindow {
 	/**
 	 * Launch the application.
 	 * @param args: Arguments received by the program.
+	 * TODO Add detailed exception management.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -75,6 +84,7 @@ public class MainWindow {
 					MainWindow window = new MainWindow();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, Constants.C_GLOBAL_ERROR, Constants.C_ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE); 
 					e.printStackTrace();
 				}
 			}
@@ -515,9 +525,15 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Help menu-item is clicked.
+	 * TODO Add a relevant help web-site
 	 */
 	private void actionOnClicHelp() {
-		
+		try {
+			openWebpage(new URL("www.microsiervos.com/"));
+		} catch (URISyntaxException | IOException e) {
+			JOptionPane.showMessageDialog(frame, Constants.C_ERROR_WHILE_BROWSING_HELP, Constants.C_ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE); 
+			//e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -530,6 +546,7 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Browse Library button is pressed.
+	 * TODO Add code
 	 */
 	private void actionOnClicBrowseLibrary() {
 		
@@ -537,6 +554,7 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Add material (>>) button is pressed.
+	 * TODO Add code
 	 */
 	private void actionOnClicAddMaterialsToList() {
 		
@@ -544,6 +562,7 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Open library button is pressed.
+	 * TODO Add code
 	 */
 	private void actionOnClicOpenLibrary() {
 		
@@ -551,6 +570,7 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Open library button is pressed.
+	 * TODO Add code
 	 */
 	private void actionOnClicNewLibrary() {
 		
@@ -558,6 +578,7 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Delete MAterial button is pressed.
+	 * TODO Add code
 	 */
 	private void actionOnClicDeleteMaterial() {
 		
@@ -565,6 +586,7 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Add Material button is pressed.
+	 * TODO Add code
 	 */
 	private void actionOnClicAddMaterial() {
 		
@@ -572,6 +594,7 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Cancel Library operation button is pressed.
+	 * TODO Add code
 	 */
 	private void actionOnClicCancelLibraryOperation() {
 		
@@ -579,10 +602,32 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Save Library as... button is pressed.
+	 * TODO Add code
 	 */
 	private void actionOnClicSaveLibraryAs() {
 		
 	}
 	
+	/**
+	 * This method opens a web page in the default browser.
+	 * @param uri URI direction for the web-page to be opened.
+	 * @throws IOException if there is a problem while browsing.
+	 */
+	public void openWebpage(URI uri) throws IOException {
+	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        desktop.browse(uri);
+	    }
+	}
+
+	/**
+	 * This method opens a web page in the default browser.
+	 * @param url URL direction to the web to be opened.
+	 * @throws URISyntaxException if there is a syntactic error in the URL.
+	 * @throws IOException if there is a problem while browsing.
+	 */
+	public void openWebpage(URL url) throws URISyntaxException, IOException {
+        openWebpage(url.toURI());
+	}
 	
 }
