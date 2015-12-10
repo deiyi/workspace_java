@@ -42,7 +42,14 @@ public class Constants {
 	public static String C_CANCEL_BUTTON = "Cancel";
 	public static String C_SAVE_LIBRARY_AS_BUTTON = "Save as...";
 
-	public static String C_MANAGED_LIBRARY_NAME_LABEL = "Libary name:";
+	public static String C_MANAGED_LIBRARY_NAME_LABEL = "Libary name: ";
+	
+	//Dialogs messages
+	public static String C_INSERT_NEW_LIBRARY_NAME = "Insert new library name:";
+	public static String C_WANT_TO_CONTINUE = "The previous library was modified but the changes were not saved.\n"
+			+ "Do you like to continue?";
+	public static String C_WARNING_TITLE = "Warning";
+	
 	
 	//Error messages
 	public static String C_ERROR_DIALOG_TITLE = "Error";

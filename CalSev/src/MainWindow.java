@@ -63,7 +63,6 @@ public class MainWindow {
 	private JButton newLibraryButton;
 	private JButton deleteMaterialButton;
 	private JButton addMaterialButton;
-	private JButton cancelButton;
 	private JButton saveAsButton;
 	private JTable materialPropertiesTable;
 	private JScrollPane materialPropertiesScrollPanel;
@@ -71,11 +70,12 @@ public class MainWindow {
 	private JList availableMaterialsList;
 	private JScrollPane availableMaterialsScrollPanel;
 	private JLabel selectMaterialLabel;
+	
+	private MaterialLibrary managedLibrary;
 
 	/**
 	 * Launch the application.
 	 * @param args: Arguments received by the program.
-	 * TODO Add detailed exception management.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -84,7 +84,8 @@ public class MainWindow {
 					MainWindow window = new MainWindow();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, Constants.C_GLOBAL_ERROR, Constants.C_ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE); 
+					JOptionPane.showMessageDialog(null, Constants.C_GLOBAL_ERROR, Constants.C_ERROR_DIALOG_TITLE,
+							JOptionPane.ERROR_MESSAGE); 
 					e.printStackTrace();
 				}
 			}
@@ -322,9 +323,9 @@ public class MainWindow {
 			panelLibrary.add(libraryManagementPanel, BorderLayout.WEST);
 			GridBagLayout gbl_libraryManagementPanel = new GridBagLayout();
 			gbl_libraryManagementPanel.columnWidths = new int[]{0, 0};
-			gbl_libraryManagementPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
-			gbl_libraryManagementPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-			gbl_libraryManagementPanel.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_libraryManagementPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
+			gbl_libraryManagementPanel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+			gbl_libraryManagementPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 			libraryManagementPanel.setLayout(gbl_libraryManagementPanel);
 			
 			openLibraryButton = new JButton(Constants.C_OPEN_LIBRARY_BUTTON);
@@ -361,12 +362,26 @@ public class MainWindow {
 				}
 			});
 			
+			saveAsButton = new JButton(Constants.C_SAVE_LIBRARY_AS_BUTTON);
+			GridBagConstraints gbc_saveAsButton = new GridBagConstraints();
+			gbc_saveAsButton.fill = GridBagConstraints.HORIZONTAL;
+			gbc_saveAsButton.insets = new Insets(0, 0, 5, 0);
+			gbc_saveAsButton.gridx = 0;
+			gbc_saveAsButton.gridy = 2;
+			libraryManagementPanel.add(saveAsButton, gbc_saveAsButton);
+			saveAsButton.setEnabled(false);
+			saveAsButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					actionOnClicSaveLibraryAs();
+				}
+			});
+			
 			availableMaterialsScrollPanel = new JScrollPane();
 			GridBagConstraints gbc_availableMaterialsScrollPanel = new GridBagConstraints();
 			gbc_availableMaterialsScrollPanel.fill = GridBagConstraints.BOTH;
 			gbc_availableMaterialsScrollPanel.insets = new Insets(0, 0, 5, 0);
 			gbc_availableMaterialsScrollPanel.gridx = 0;
-			gbc_availableMaterialsScrollPanel.gridy = 2;
+			gbc_availableMaterialsScrollPanel.gridy = 3;
 			libraryManagementPanel.add(availableMaterialsScrollPanel, gbc_availableMaterialsScrollPanel);
 			
 			//String item2[] = {"ASME mat1", "mat2", "KTA mat3", "mat4", "mat5", "mat6", "mat7", "mat8", "mat9"};
@@ -378,7 +393,7 @@ public class MainWindow {
 			gbc_deleteMaterialButton.fill = GridBagConstraints.HORIZONTAL;
 			gbc_deleteMaterialButton.insets = new Insets(0, 0, 5, 0);
 			gbc_deleteMaterialButton.gridx = 0;
-			gbc_deleteMaterialButton.gridy = 3;
+			gbc_deleteMaterialButton.gridy = 4;
 			libraryManagementPanel.add(deleteMaterialButton, gbc_deleteMaterialButton);
 			
 			addMaterialButton = new JButton(Constants.C_ADD_MATERIAL_BUTTON);
@@ -391,16 +406,16 @@ public class MainWindow {
 			GridBagConstraints gbc_addMaterialButton = new GridBagConstraints();
 			gbc_addMaterialButton.fill = GridBagConstraints.HORIZONTAL;
 			gbc_addMaterialButton.gridx = 0;
-			gbc_addMaterialButton.gridy = 4;
+			gbc_addMaterialButton.gridy = 5;
 			libraryManagementPanel.add(addMaterialButton, gbc_addMaterialButton);
 			
 			materialManagementPanel = new JPanel();
 			panelLibrary.add(materialManagementPanel, BorderLayout.CENTER);
 			GridBagLayout gbl_materialManagementPanel = new GridBagLayout();
-			gbl_materialManagementPanel.columnWidths = new int[]{0, 0, 0};
-			gbl_materialManagementPanel.rowHeights = new int[]{0, 0, 0, 0};
-			gbl_materialManagementPanel.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
-			gbl_materialManagementPanel.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
+			gbl_materialManagementPanel.columnWidths = new int[]{0, 0};
+			gbl_materialManagementPanel.rowHeights = new int[]{0, 0, 0};
+			gbl_materialManagementPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+			gbl_materialManagementPanel.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 			materialManagementPanel.setLayout(gbl_materialManagementPanel);
 		}
 		
@@ -408,7 +423,6 @@ public class MainWindow {
 			libraryNameLabel = new JLabel(Constants.C_MANAGED_LIBRARY_NAME_LABEL);
 			GridBagConstraints gbc_libraryNameLabel = new GridBagConstraints();
 			gbc_libraryNameLabel.anchor = GridBagConstraints.WEST;
-			gbc_libraryNameLabel.gridwidth = 2;
 			gbc_libraryNameLabel.insets = new Insets(0, 0, 5, 0);
 			gbc_libraryNameLabel.gridx = 0;
 			gbc_libraryNameLabel.gridy = 0;
@@ -417,8 +431,6 @@ public class MainWindow {
 			materialPropertiesScrollPanel = new JScrollPane();
 			GridBagConstraints gbc_materialPropertiesScrollPanel = new GridBagConstraints();
 			gbc_materialPropertiesScrollPanel.fill = GridBagConstraints.BOTH;
-			gbc_materialPropertiesScrollPanel.gridwidth = 2;
-			gbc_materialPropertiesScrollPanel.insets = new Insets(0, 0, 5, 5);
 			gbc_materialPropertiesScrollPanel.gridx = 0;
 			gbc_materialPropertiesScrollPanel.gridy = 1;
 			materialManagementPanel.add(materialPropertiesScrollPanel, gbc_materialPropertiesScrollPanel);
@@ -450,31 +462,6 @@ public class MainWindow {
 			materialPropertiesTable = new JTable(tableModel);*/
 			materialPropertiesTable = new JTable();
 			materialPropertiesScrollPanel.setViewportView(materialPropertiesTable);
-			
-			cancelButton = new JButton(Constants.C_CANCEL_BUTTON);
-			cancelButton.setEnabled(false);
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					actionOnClicCancelLibraryOperation();
-				}
-			});
-			GridBagConstraints gbc_cancelButton = new GridBagConstraints();
-			gbc_cancelButton.insets = new Insets(0, 0, 0, 5);
-			gbc_cancelButton.gridx = 0;
-			gbc_cancelButton.gridy = 2;
-			materialManagementPanel.add(cancelButton, gbc_cancelButton);
-			
-			saveAsButton = new JButton(Constants.C_SAVE_LIBRARY_AS_BUTTON);
-			saveAsButton.setEnabled(false);
-			saveAsButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					actionOnClicSaveLibraryAs();
-				}
-			});
-			GridBagConstraints gbc_saveAsButton = new GridBagConstraints();
-			gbc_saveAsButton.gridx = 1;
-			gbc_saveAsButton.gridy = 2;
-			materialManagementPanel.add(saveAsButton, gbc_saveAsButton);
 		}
 	}
 	
@@ -531,7 +518,8 @@ public class MainWindow {
 		try {
 			openWebpage(new URL("www.microsiervos.com/"));
 		} catch (URISyntaxException | IOException e) {
-			JOptionPane.showMessageDialog(frame, Constants.C_ERROR_WHILE_BROWSING_HELP, Constants.C_ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE); 
+			JOptionPane.showMessageDialog(frame, Constants.C_ERROR_WHILE_BROWSING_HELP, Constants.C_ERROR_DIALOG_TITLE,
+					JOptionPane.ERROR_MESSAGE); 
 			//e.printStackTrace();
 		}
 	}
@@ -570,10 +558,34 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Open library button is pressed.
-	 * TODO Add code
 	 */
 	private void actionOnClicNewLibrary() {
-		
+		if (managedLibrary == null) {
+			createNewLibrary();
+		} else if (managedLibrary.hasChanged()) {	//if the current library was not saved since the last change
+			int dialogResult = JOptionPane.showConfirmDialog(null, Constants.C_WANT_TO_CONTINUE, 
+					Constants.C_WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+			if(dialogResult == JOptionPane.YES_OPTION){
+				createNewLibrary();
+			}
+		} else {
+			createNewLibrary();
+		}
+	}
+	
+	/**
+	 * This method creates a new "current managed library".
+	 * @return The new "current managed library" name or NULL if Cancel was pressed.
+	 * TODO Improve naming robustness.
+	 */
+	private String createNewLibrary() {
+		String libraryName= JOptionPane.showInputDialog(Constants.C_INSERT_NEW_LIBRARY_NAME);
+		if ((libraryName != null) && (!libraryName.isEmpty())) {	//If Cancel was not pressed
+			setLibraryNameOnLibraryTab(libraryName);
+			managedLibrary = new MaterialLibrary(libraryName);
+			enableButtonsAfterNewLibrary();
+		}
+		return libraryName;
 	}
 	
 	/**
@@ -589,14 +601,6 @@ public class MainWindow {
 	 * TODO Add code
 	 */
 	private void actionOnClicAddMaterial() {
-		
-	}
-	
-	/**
-	 * Action executed when the Cancel Library operation button is pressed.
-	 * TODO Add code
-	 */
-	private void actionOnClicCancelLibraryOperation() {
 		
 	}
 	
@@ -630,4 +634,19 @@ public class MainWindow {
         openWebpage(url.toURI());
 	}
 	
+	/**
+	 * This method sets the value of the library name label.
+	 * @param libraryName The library name to show.
+	 */
+	private void setLibraryNameOnLibraryTab(String libraryName) {
+		libraryNameLabel.setText(Constants.C_MANAGED_LIBRARY_NAME_LABEL + libraryName);
+	}
+	
+	/**
+	 * This method enables the relevant buttons after creating a new library
+	 */
+	private void enableButtonsAfterNewLibrary() {
+		addMaterialButton.setEnabled(true);
+		saveAsButton.setEnabled(true);
+	}
 }

@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 
+@SuppressWarnings("serial")
 public class AboutCalSevWindow extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
@@ -33,21 +34,24 @@ public class AboutCalSevWindow extends JDialog {
 	 * Create the dialog.
 	 */
 	public AboutCalSevWindow() {
+		//General dialog appearance
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setTitle(Constants.C_ABOUT_WINDOW_TITLE);
 		setResizable(false);
 		setBounds(Constants.C_ABOUT_PREFERED_POSITION_X_AT_START, Constants.C_ABOUT_PREFERED_POSITION_Y_AT_START, 
 				Constants.C_ABOUT_PREFERED_SIZE_X, Constants.C_ABOUT_PREFERED_SIZE_Y);
 		getContentPane().setLayout(new BorderLayout());
+		
+		//Information panel
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
 			aboutInfoLabel = new JLabel(Constants.C_ABOUT_INFO);
 			contentPanel.add(aboutInfoLabel, BorderLayout.CENTER);
 		}
 		
+		//Button panel
 		{
 			buttonPanel = new JPanel();
 			buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -67,7 +71,7 @@ public class AboutCalSevWindow extends JDialog {
 	}
 	
 	/**
-	 * Action performed when the OK button is clicked.
+	 * Action performed when the OK button is clicked (the dialog disappears).
 	 */
 	private void actionOnClicOK() {
 		setVisible(false);
