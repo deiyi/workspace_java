@@ -44,6 +44,9 @@ public class Constants {
 
 	public static String C_MANAGED_LIBRARY_NAME_LABEL = "Libary name: ";
 	
+	public static String C_VALUE_COLUMN = "Value";
+	public static String C_PROPERTY_COLUMN = "Property";
+	
 	//Dialogs messages
 	public static String C_INSERT_NEW_LIBRARY_NAME = "Insert new library name:";
 	public static String C_INSERT_NEW_MATERIAL_NAME = "Insert new material name:";

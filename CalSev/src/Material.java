@@ -1,4 +1,8 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -58,5 +62,23 @@ public class Material {
 	 */
 	public String getName() {
 		return getPropertyValue(Constants.C_NAME_PROPERTY);
+	}
+	
+	/**
+	 * This method returns the property-value pairs for this material
+	 * @return All property-material pairs for this material.
+	 */
+	public List<String[]> getPropertiesAndValues() {
+		List<String[]> result = new ArrayList<String[]>();
+		
+		Iterator<Entry<String, String>> entries = properties.entrySet().iterator();
+		while (entries.hasNext()) {
+			Entry<String, String> thisEntry = (Entry<String, String>) entries.next();
+			String key = thisEntry.getKey();
+			String value = thisEntry.getValue();
+			result.add(new String[] {key, value});
+		}
+		
+		return result;
 	}
 }

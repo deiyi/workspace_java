@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.Dimension;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -317,6 +320,7 @@ public class MainWindow {
 	/**
 	 * Draw the Library panel and add all its objects.
 	 */
+	@SuppressWarnings("serial")
 	private void initializeLibraryPanel() {
 		panelLibrary = new JPanel();
 		mainTabbedPane.addTab(Constants.C_TAB_LIBRARY_TITLE, null, panelLibrary, null);
@@ -469,7 +473,13 @@ public class MainWindow {
 	        
 	        TableModel tableModel = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
 			materialPropertiesTable = new JTable(tableModel);*/
-			materialPropertiesTable = new JTable();
+			materialPropertiesTable = new JTable() {
+				public boolean isCellEditable(int row,int column) {
+					switch(column){             
+			        	case 0:  // select the cell you want make it not editable 
+			        		return false;  
+			        	default: return true;}  
+	        	}}; 
 			materialPropertiesScrollPanel.setViewportView(materialPropertiesTable);
 		}
 	}
@@ -677,19 +687,32 @@ public class MainWindow {
 	
 	/**
 	 * This is the action executed when the selected material changes in the available materials list.
-	 * TODO add code
 	 */
 	private void availableMaterialsListSelectionChanged() {
 		if (availableMaterialsList.getSelectedIndex() != -1) {	//If a material is selected
 			deleteMaterialButton.setEnabled(true);
-			Material selectedMaterial;
-			selectedMaterial = managedLibrary.getMaterialByName(availableMaterialsList.getSelectedValue());
-			System.out.println(selectedMaterial.getName());
-			
-			//show material data on lateral panel
+			Material selectedMaterial = managedLibrary.getMaterialByName(availableMaterialsList.getSelectedValue());
+			//System.out.println(selectedMaterial.getName());
+			showMaterialData(selectedMaterial);
 		} else {
 			deleteMaterialButton.setEnabled(false);
+			((DefaultTableModel)materialPropertiesTable.getModel()).setRowCount(0);	//Remove content
 		}
+	}
+	
+	/**
+	 * This method shows the material properties on the relevant table.
+	 * @param selectedMaterial the material whose properties will be shown.
+	 */
+	private void showMaterialData(Material selectedMaterial) {
+		List<String> columns = new ArrayList<String>();
+
+        columns.add(Constants.C_PROPERTY_COLUMN);
+        columns.add(Constants.C_VALUE_COLUMN);
+        
+        TableModel tableModel = new DefaultTableModel(selectedMaterial.getPropertiesAndValues().toArray(new Object[][] {}),
+        		columns.toArray());
+		materialPropertiesTable.setModel(tableModel);
 	}
 	
 	/**
