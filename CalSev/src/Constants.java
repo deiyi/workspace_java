@@ -46,7 +46,10 @@ public class Constants {
 	
 	//Dialogs messages
 	public static String C_INSERT_NEW_LIBRARY_NAME = "Insert new library name:";
+	public static String C_INSERT_NEW_MATERIAL_NAME = "Insert new material name:";
 	public static String C_WANT_TO_CONTINUE = "The previous library was modified but the changes were not saved.\n"
+			+ "Do you like to continue?";
+	public static String C_WANT_TO_DELETE_MATERIAL = " was selected to be removed.\n"
 			+ "Do you like to continue?";
 	public static String C_WARNING_TITLE = "Warning";
 	
@@ -58,7 +61,11 @@ public class Constants {
 	public static String C_GLOBAL_ERROR = "Something odd occurred and the appliation will finish.\n"
 			+ "I've seen things you people wouldn't believe: Attack ships on fire off the shoulder of Orión.\n"
 			+ "I've watched c-beams glitter in the dark near the Tannhäuser Gate.\n"
-			+ "All those ... moments will be lost in time, like tears...in rain. Time to die";
+			+ "All those... moments will be lost in time, like tears... in rain. Time to die";
+
+	public static String C_ERROR_PROPERTY_NOT_FOUND = "The given property does not exist in this material.";
+	public static String C_ERROR_REPEATED_NAME = "The given material name already exist in this library.";
+	public static String C_ERROR_MATERIAL_NOT_FOUND = "The given material was not found.";
 	
 	// About window properties
 	public static int C_ABOUT_PREFERED_POSITION_X_AT_START = 100;
@@ -79,5 +86,8 @@ public class Constants {
 				+ " A PARTICULAR PURPOSE.  See the GNU General Public License for more details." +
 		"<br>" + "You should have received a copy of the GNU General Public License along with "
 				+ "this program.  If not, see http://www.gnu.org/licenses/" + "</html>";
+	
+	//Material constants
+	public static String C_NAME_PROPERTY = "Name";
 	
 }

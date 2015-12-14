@@ -20,6 +20,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JPanel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -30,6 +31,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import javax.swing.JList;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 public class MainWindow {
 
@@ -66,8 +69,8 @@ public class MainWindow {
 	private JButton saveAsButton;
 	private JTable materialPropertiesTable;
 	private JScrollPane materialPropertiesScrollPanel;
-	private JList materialsOnLibraryList;
-	private JList availableMaterialsList;
+	private JList<String> materialsOnLibraryList;
+	private JList<String> availableMaterialsList;
 	private JScrollPane availableMaterialsScrollPanel;
 	private JLabel selectMaterialLabel;
 	
@@ -76,18 +79,19 @@ public class MainWindow {
 	/**
 	 * Launch the application.
 	 * @param args: Arguments received by the program.
+	 * TODO remove //
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
+				//try {
 					MainWindow window = new MainWindow();
 					window.frame.setVisible(true);
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, Constants.C_GLOBAL_ERROR, Constants.C_ERROR_DIALOG_TITLE,
-							JOptionPane.ERROR_MESSAGE); 
-					e.printStackTrace();
-				}
+				//} catch (Exception e) {
+				//	JOptionPane.showMessageDialog(null, Constants.C_GLOBAL_ERROR, Constants.C_ERROR_DIALOG_TITLE,
+				//			JOptionPane.ERROR_MESSAGE); 
+				//	e.printStackTrace();
+				//}
 			}
 		});
 	}
@@ -173,7 +177,7 @@ public class MainWindow {
 			
 			{
 				//String item[] = {"ASME mat1", "mat2", "KTA mat3", "mat4", "mat5", "mat6", "mat7", "mat8", "mat9"};
-				materialsOnLibraryList = new JList();
+				materialsOnLibraryList = new JList<String>();
 				calculationMaterialsScrollPanel.setViewportView(materialsOnLibraryList);
 			}
 			
@@ -385,7 +389,12 @@ public class MainWindow {
 			libraryManagementPanel.add(availableMaterialsScrollPanel, gbc_availableMaterialsScrollPanel);
 			
 			//String item2[] = {"ASME mat1", "mat2", "KTA mat3", "mat4", "mat5", "mat6", "mat7", "mat8", "mat9"};
-			availableMaterialsList = new JList();
+			availableMaterialsList = new JList<String>();
+			availableMaterialsList.addListSelectionListener(new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent arg0) {
+					availableMaterialsListSelectionChanged();
+				}
+			});
 			availableMaterialsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			availableMaterialsScrollPanel.setViewportView(availableMaterialsList);
 			
@@ -580,7 +589,7 @@ public class MainWindow {
 	 */
 	private String createNewLibrary() {
 		String libraryName= JOptionPane.showInputDialog(Constants.C_INSERT_NEW_LIBRARY_NAME);
-		if ((libraryName != null) && (!libraryName.isEmpty())) {	//If Cancel was not pressed
+		if ((libraryName != null) && (!libraryName.isEmpty())) {	//If Cancel was not pressed and a non-empty name was given
 			setLibraryNameOnLibraryTab(libraryName);
 			managedLibrary = new MaterialLibrary(libraryName);
 			enableButtonsAfterNewLibrary();
@@ -589,19 +598,35 @@ public class MainWindow {
 	}
 	
 	/**
-	 * Action executed when the Delete MAterial button is pressed.
-	 * TODO Add code
+	 * Action executed when the Delete Material button is pressed.
 	 */
 	private void actionOnClicDeleteMaterial() {
-		
+		String selectedMaterialName = availableMaterialsList.getSelectedValue();
+		if (selectedMaterialName != null) {
+			int dialogResult = JOptionPane.showConfirmDialog(null, selectedMaterialName + Constants.C_WANT_TO_DELETE_MATERIAL, 
+					Constants.C_WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+			if(dialogResult == JOptionPane.YES_OPTION){
+				removeElementFromStringJList(availableMaterialsList, selectedMaterialName);			    
+				managedLibrary.deleteMaterialByName(selectedMaterialName);
+			}
+		}
 	}
 	
 	/**
 	 * Action executed when the Add Material button is pressed.
-	 * TODO Add code
 	 */
 	private void actionOnClicAddMaterial() {
-		
+		String materialName= JOptionPane.showInputDialog(Constants.C_INSERT_NEW_MATERIAL_NAME);
+		if ((materialName != null) && (!materialName.isEmpty())) {	//If Cancel was not pressed and a non-empty name was given
+			try {
+				managedLibrary.addMaterial(materialName);
+				addElementToStringJList(availableMaterialsList, materialName);
+			} catch(IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(frame, e.getMessage(), Constants.C_ERROR_DIALOG_TITLE,
+						JOptionPane.ERROR_MESSAGE); 
+				//e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -648,5 +673,61 @@ public class MainWindow {
 	private void enableButtonsAfterNewLibrary() {
 		addMaterialButton.setEnabled(true);
 		saveAsButton.setEnabled(true);
+	}
+	
+	/**
+	 * This is the action executed when the selected material changes in the available materials list.
+	 * TODO add code
+	 */
+	private void availableMaterialsListSelectionChanged() {
+		if (availableMaterialsList.getSelectedIndex() != -1) {	//If a material is selected
+			deleteMaterialButton.setEnabled(true);
+			Material selectedMaterial;
+			selectedMaterial = managedLibrary.getMaterialByName(availableMaterialsList.getSelectedValue());
+			System.out.println(selectedMaterial.getName());
+			
+			//show material data on lateral panel
+		} else {
+			deleteMaterialButton.setEnabled(false);
+		}
+	}
+	
+	/**
+	 * This method removes an element (String) from a JList<String>
+	 * @param stringList JList where the element should be removed
+	 * @param elementToRemove Item to be removed.
+	 * @throws ArrayIndexOutOfBoundsException If the element is not found.
+	 */
+	private void removeElementFromStringJList(JList<String> stringList, String elementToRemove) throws ArrayIndexOutOfBoundsException {
+		int materialToBeRemovedIndex = -1;
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
+	    for(int i = 0; i < stringList.getModel().getSize(); i++) {
+	    	String element = stringList.getModel().getElementAt(i).toString();
+	    	listModel.addElement(element);
+	    	
+	    	if (element.equals(elementToRemove)) {
+	    		materialToBeRemovedIndex = i;
+	    	}
+	    }       
+	    
+	    listModel.remove(materialToBeRemovedIndex);
+	    stringList.setModel(listModel);
+	    stringList.setSelectedIndex(listModel.getSize() - 1);
+	}
+	
+	/**
+	 * This method adds an element (String) to the given JList
+	 * @param stringList The JList where the element will be added
+	 * @param elementToAdd The element to add.
+	 */
+	private void addElementToStringJList(JList<String> stringList, String elementToAdd) {
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
+	    for(int i = 0; i < stringList.getModel().getSize(); i++) {
+	    	listModel.addElement(stringList.getModel().getElementAt(i).toString());
+	    }        
+	    listModel.addElement(elementToAdd);
+	    stringList.setModel(listModel);
+	    
+	    stringList.setSelectedIndex(listModel.getSize() - 1);
 	}
 }
