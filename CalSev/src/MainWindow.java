@@ -12,6 +12,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,18 +24,27 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JPanel;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.swing.JList;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.event.ListSelectionEvent;
 
 public class MainWindow {
@@ -400,6 +410,7 @@ public class MainWindow {
 				}
 			});
 			availableMaterialsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			availableMaterialsList.setModel(new DefaultListModel<String>());
 			availableMaterialsScrollPanel.setViewportView(availableMaterialsList);
 			
 			GridBagConstraints gbc_deleteMaterialButton = new GridBagConstraints();
@@ -478,8 +489,17 @@ public class MainWindow {
 					switch(column){             
 			        	case 0:  // select the cell you want make it not editable 
 			        		return false;  
-			        	default: return true;}  
-	        	}}; 
+			        	default: return true;
+			        }  
+				}
+			}; 
+	        new TableCellListener(materialPropertiesTable , new AbstractAction() {
+	            public void actionPerformed(ActionEvent e) {
+	                TableCellListener tcl = (TableCellListener)e.getSource();
+	                cellChangeOnMaterialPropertiesTable(tcl);
+	            }
+	        });
+            
 			materialPropertiesScrollPanel.setViewportView(materialPropertiesTable);
 		}
 	}
@@ -598,7 +618,7 @@ public class MainWindow {
 	 * TODO Improve naming robustness.
 	 */
 	private String createNewLibrary() {
-		String libraryName= JOptionPane.showInputDialog(Constants.C_INSERT_NEW_LIBRARY_NAME);
+		String libraryName= JOptionPane.showInputDialog(frame, Constants.C_INSERT_NEW_LIBRARY_NAME);
 		if ((libraryName != null) && (!libraryName.isEmpty())) {	//If Cancel was not pressed and a non-empty name was given
 			setLibraryNameOnLibraryTab(libraryName);
 			managedLibrary = new MaterialLibrary(libraryName);
@@ -641,10 +661,44 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Save Library as... button is pressed.
-	 * TODO Add code
 	 */
 	private void actionOnClicSaveLibraryAs() {
+		//Launch dialog
+		JFileChooser saveDialog = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(Constants.C_LIBRARY_IO_DESCRIPTION,
+				Constants.C_LIBRARY_EXTENSION);
+		saveDialog.setFileFilter(filter);
+		saveDialog.setSelectedFile(new File(managedLibrary.getName() + Constants.C_LIBRARY_EXTENSION));
 		
+		//If the "Save" button was pressed
+		if (saveDialog.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			File path = saveDialog.getSelectedFile();
+			if (!path.getName().endsWith(Constants.C_LIBRARY_EXTENSION)) {	//add extension if needed
+		        path = new File(path.getAbsolutePath() + Constants.C_LIBRARY_EXTENSION);
+			}
+			
+			//Check if the file already exists and, if so, ask if it should be overwritten
+			boolean saveFile = true;
+			if (path.exists()) {
+				saveFile = false;
+				int dialogResult = JOptionPane.showConfirmDialog(null, Constants.C_WANT_TO_OVERWRITE, 
+						Constants.C_WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+				if(dialogResult == JOptionPane.YES_OPTION){
+					saveFile = true;
+				}
+			}
+			
+			//If everything is OK to try to save the file
+			if (saveFile) {
+			    try {
+					managedLibrary.writeXMLFile(path);
+				} catch (ParserConfigurationException | TransformerException e) {
+					JOptionPane.showMessageDialog(null, Constants.C_ERROR_WHILE_EXPORTING_LIBRARY, 
+							Constants.C_ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
+					//e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	/**
@@ -683,6 +737,12 @@ public class MainWindow {
 	private void enableButtonsAfterNewLibrary() {
 		addMaterialButton.setEnabled(true);
 		saveAsButton.setEnabled(true);
+		
+		DefaultListModel<String> listModel = (DefaultListModel<String>) availableMaterialsList.getModel();
+        listModel.removeAllElements();
+		
+		((DefaultTableModel)materialPropertiesTable.getModel()).setRowCount(0);	//Remove content
+		deleteMaterialButton.setEnabled(false);
 	}
 	
 	/**
@@ -752,5 +812,15 @@ public class MainWindow {
 	    stringList.setModel(listModel);
 	    
 	    stringList.setSelectedIndex(listModel.getSize() - 1);
+	}
+	
+	/**
+	 * This is the action executed when a cell is changed on the material properties table
+	 * @param tcl The Table Cell Listener object.
+	 */
+	private void cellChangeOnMaterialPropertiesTable(TableCellListener tcl) {
+		String materialName = availableMaterialsList.getSelectedValue();
+		String propertyName = materialPropertiesTable.getModel().getValueAt(tcl.getRow(), 0).toString();
+		managedLibrary.setMaterialProperty(materialName, propertyName, tcl.getNewValue().toString());
 	}
 }

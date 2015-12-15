@@ -1,11 +1,13 @@
 
 public class Constants {
 	
+	
 	// Main window properties
 	public static int C_MAIN_PREFERED_POSITION_X_AT_START = 100;
 	public static int C_MAIN_PREFERED_POSITION_Y_AT_START = 100;
 	public static int C_MAIN_PREFERED_SIZE_X = 640;
 	public static int C_MAIN_PREFERED_SIZE_Y = 480;
+	
 	
 	// General window
 	public static String C_APPLICATION_NAME = "CalSev";
@@ -13,9 +15,11 @@ public class Constants {
 	public static String C_APP_NAME_VERSION = C_APPLICATION_NAME + " " + C_VERSION;
 	public static String C_MAIN_WINDOW_TITLE = C_APP_NAME_VERSION;
 
+	
 	// Tabs
 	public static String C_TAB_CALCULATION_TITLE = "Calculation";
 	public static String C_TAB_LIBRARY_TITLE = "Library";
+	
 	
 	// Menus
 	public static String C_FILE_MENU_TITLE = "File";
@@ -23,6 +27,7 @@ public class Constants {
 	public static String C_FILE_ITEM_EXIT_TITLE = "Exit";
 	public static String C_HELP_ITEM_HELP_TITLE = "Help";
 	public static String C_HELP_ITEM_ABOUT_TITLE = "About...";
+	
 	
 	// Calculation tab
 	public static String C_SELECT_MATERIALS_LABEL = "Select materials:";
@@ -33,6 +38,7 @@ public class Constants {
 	
 	public static String C_CALCULATION_STEPS_TITLE = "Calculation steps:";
 	public static String C_RESULTS_TITLE = "Results:";
+	
 	
 	//Library tab
 	public static String C_OPEN_LIBRARY_BUTTON = "Open library";
@@ -47,6 +53,7 @@ public class Constants {
 	public static String C_VALUE_COLUMN = "Value";
 	public static String C_PROPERTY_COLUMN = "Property";
 	
+	
 	//Dialogs messages
 	public static String C_INSERT_NEW_LIBRARY_NAME = "Insert new library name:";
 	public static String C_INSERT_NEW_MATERIAL_NAME = "Insert new material name:";
@@ -54,7 +61,13 @@ public class Constants {
 			+ "Do you like to continue?";
 	public static String C_WANT_TO_DELETE_MATERIAL = " was selected to be removed.\n"
 			+ "Do you like to continue?";
+	public static String C_WANT_TO_OVERWRITE = "The selected file already exists.\n"
+			+ "Do you like to overwrite it?";
 	public static String C_WARNING_TITLE = "Warning";
+
+	
+	public static String C_LIBRARY_EXTENSION = ".xml";
+	public static String C_LIBRARY_IO_DESCRIPTION = "Material library";
 	
 	
 	//Error messages
@@ -69,12 +82,15 @@ public class Constants {
 	public static String C_ERROR_PROPERTY_NOT_FOUND = "The given property does not exist in this material.";
 	public static String C_ERROR_REPEATED_NAME = "The given material name already exist in this library.";
 	public static String C_ERROR_MATERIAL_NOT_FOUND = "The given material was not found.";
+	public static String C_ERROR_WHILE_EXPORTING_LIBRARY = "Something odd occurred while the library was been exported.";
+	
 	
 	// About window properties
 	public static int C_ABOUT_PREFERED_POSITION_X_AT_START = 100;
 	public static int C_ABOUT_PREFERED_POSITION_Y_AT_START = 100;
 	public static int C_ABOUT_PREFERED_SIZE_X = 450;
 	public static int C_ABOUT_PREFERED_SIZE_Y = 300;
+	
 	
 	//About window
 	public static String C_ABOUT_WINDOW_TITLE = "About " + C_MAIN_WINDOW_TITLE;
@@ -89,6 +105,7 @@ public class Constants {
 				+ " A PARTICULAR PURPOSE.  See the GNU General Public License for more details." +
 		"<br>" + "You should have received a copy of the GNU General Public License along with "
 				+ "this program.  If not, see http://www.gnu.org/licenses/" + "</html>";
+	
 	
 	//Material constants
 	public static String C_NAME_PROPERTY = "Name";

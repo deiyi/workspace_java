@@ -1,4 +1,8 @@
+import java.io.File;
 import java.util.Vector;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 /**
  * 
@@ -13,10 +17,21 @@ public class MaterialLibrary {
 	private Vector<Material> materialList;
 	private boolean hasBeenModified = true;
 	
-	
+	/**
+	 * This method creates a new material library and assign its name
+	 * @param libraryName The name to be set.
+	 */
 	public MaterialLibrary(String libraryName) {
 		materialList = new Vector<Material>();
 		setName(libraryName);
+	}
+	
+	/**
+	 * This method creates a new material library and sets its name as empty.
+	 */
+	public MaterialLibrary() {
+		materialList = new Vector<Material>();
+		setName("");
 	}
 	
 	/**
@@ -120,5 +135,38 @@ public class MaterialLibrary {
 	 */
 	public Material getMaterialByIndex(int index) throws ArrayIndexOutOfBoundsException {
 		return materialList.elementAt(index);
+	}
+	
+	/**
+	 * This method sets a property on a given material.
+	 * @param materialName The material whose property should be modified.
+	 * @param propertyName The property to be modified.
+	 * @param propertyValue The new value.
+	 * @throws IllegalArgumentException If the material is not in the library.
+	 */
+	public void setMaterialProperty(String materialName, String propertyName, String propertyValue) throws IllegalArgumentException {
+		Material referedMaterial = getMaterialByName(materialName);
+		referedMaterial.setProperty(propertyName, propertyValue);
+		setModifiedStatus(true);
+	}
+	
+	/**
+	 * This method gets all the materials contained in this library.
+	 * @return The materials on the library.
+	 */
+	public Vector<Material> getAllMaterial() {
+		return materialList;
+	}
+	
+	/**
+	 * This method writes the library information into an xml file.
+	 * @param path File where the information will be stored.
+	 * @throws ParserConfigurationException If an error occurred while parsing the information.
+	 * @throws TransformerException If an error occurred while writing the file.
+	 */
+	public void writeXMLFile(File path) throws ParserConfigurationException, TransformerException {
+		XMLManager manager = new XMLManager();
+		manager.writeLibrary(this, path);
+		setModifiedStatus(false);
 	}
 }

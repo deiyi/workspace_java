@@ -23,7 +23,14 @@ public class Material {
 	 */
 	public Material(String materialName) {
 		properties = new HashMap<String, String>();
-		addProperty(Constants.C_NAME_PROPERTY, materialName);
+		setProperty(Constants.C_NAME_PROPERTY, materialName);
+
+		setProperty("C", "");
+		setProperty("V", "");
+		setProperty("Mn", "");
+		setProperty("Mg", "");
+		setProperty("O", "");
+		setProperty("N", "");
 	}
 	
 	/**
@@ -31,7 +38,7 @@ public class Material {
 	 * @param property The property name
 	 * @param value The value for the given property
 	 */
-	public void addProperty(String property, String value) {
+	public void setProperty(String property, String value) {
 		properties.put(property, value);
 	}
 	
