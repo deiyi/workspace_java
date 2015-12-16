@@ -167,6 +167,6 @@ public class MaterialLibrary {
 	public void writeXMLFile(File path) throws ParserConfigurationException, TransformerException {
 		XMLManager manager = new XMLManager();
 		manager.writeLibrary(this, path);
-		setModifiedStatus(false);
+		setModifiedStatus(false);	//Once saved, it is considered as not modified
 	}
 }
