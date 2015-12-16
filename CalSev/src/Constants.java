@@ -66,8 +66,11 @@ public class Constants {
 	public static String C_WARNING_TITLE = "Warning";
 
 	
-	public static String C_LIBRARY_EXTENSION = ".xml";
+	public static String C_LIBRARY_EXTENSION = "xml";
 	public static String C_LIBRARY_IO_DESCRIPTION = "Material library";
+	public static String C_GLOBAL_XML_TAG = "MaterialLibrary";
+	public static String C_MATERIAL_XML_TAG = "Material";
+	public static String C_VALUE_XML_PROPERTY = "Value";
 	
 	
 	//Error messages
@@ -83,6 +86,7 @@ public class Constants {
 	public static String C_ERROR_REPEATED_NAME = "The given material name already exist in this library.";
 	public static String C_ERROR_MATERIAL_NOT_FOUND = "The given material was not found.";
 	public static String C_ERROR_WHILE_EXPORTING_LIBRARY = "Something odd occurred while the library was been exported.";
+	public static String C_ERROR_READING_XML_FILE = "An error occurred while reading a library.";
 	
 	
 	// About window properties

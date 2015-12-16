@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -24,10 +25,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import org.xml.sax.SAXException;
+
 import javax.swing.JList;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.event.ListSelectionEvent;
+
 
 @SuppressWarnings("serial")
 public class LibraryPanel extends JPanel {
@@ -235,7 +240,66 @@ public class LibraryPanel extends JPanel {
 	 * TODO Add code
 	 */
 	private void actionOnClicOpenLibrary() {
+		if (managedLibrary == null) {
+			openLibrary();
+		} else if (managedLibrary.hasChanged()) {	//if the current library was not saved since the last change
+			int dialogResult = JOptionPane.showConfirmDialog(null, Constants.C_WANT_TO_CONTINUE, 
+					Constants.C_WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+			if(dialogResult == JOptionPane.YES_OPTION){
+				openLibrary();
+			}
+		} else {
+			openLibrary();
+		}
+	}
+	
+	/**
+	 * TODO extension
+	 */
+	private void openLibrary() {
+		//Initialize Open... dialog
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setAcceptAllFileFilterUsed(false);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(Constants.C_LIBRARY_IO_DESCRIPTION,
+				Constants.C_LIBRARY_EXTENSION);
+        fileChooser.addChoosableFileFilter(filter);
+        
+		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			try {
+				managedLibrary = new MaterialLibrary(file);
+				setInterfaceAfterOpenLibrary();
+			} catch (ParserConfigurationException | SAXException | IOException | ClassCastException e) {
+				JOptionPane.showMessageDialog(null, Constants.C_ERROR_READING_XML_FILE, Constants.C_ERROR_DIALOG_TITLE,
+						JOptionPane.ERROR_MESSAGE); 
+				//e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * This method sets all the elements of the interface after opening a library.
+	 * TODO Verify that it selects nothing in the Jlist
+	 */
+	private void setInterfaceAfterOpenLibrary() {
+		setLibraryNameOnLibraryTab(managedLibrary.getName());
 		
+		addMaterialButton.setEnabled(true);
+		saveAsButton.setEnabled(true);
+		deleteMaterialButton.setEnabled(false);
+		
+		//Clear list before adding the new materials
+		DefaultListModel<String> listModel = (DefaultListModel<String>) availableMaterialsList.getModel();
+        listModel.removeAllElements();
+        availableMaterialsList.setSelectedIndex(-1);	//Selects nothing?
+        for(String materialName: managedLibrary.getMaterialNames()) {
+        	GUIGeneralMethods.addElementToStringJList(availableMaterialsList, materialName);
+        }
+		
+		//Clear property table
+		((DefaultTableModel)materialPropertiesTable.getModel()).setRowCount(0);
+		Material selectedMaterial = managedLibrary.getMaterialByName(availableMaterialsList.getSelectedValue());
+		showMaterialData(selectedMaterial);
 	}
 	
 	/**
@@ -258,17 +322,17 @@ public class LibraryPanel extends JPanel {
 	/**
 	 * This method creates a new "current managed library".
 	 * @return The new "current managed library" name or NULL if Cancel was pressed.
-	 * TODO Improve naming robustness.
 	 */
 	private String createNewLibrary() {
 		String libraryName= JOptionPane.showInputDialog(frame, Constants.C_INSERT_NEW_LIBRARY_NAME);
 		if ((libraryName != null) && (!libraryName.isEmpty())) {	//If Cancel was not pressed and a non-empty name was given
-			setLibraryNameOnLibraryTab(libraryName);
 			managedLibrary = new MaterialLibrary(libraryName);
+			setLibraryNameOnLibraryTab(libraryName);
 			enableButtonsAfterNewLibrary();
 		}
 		return libraryName;
 	}
+	
 	
 	/**
 	 * Action executed when the Delete Material button is pressed.
@@ -311,13 +375,13 @@ public class LibraryPanel extends JPanel {
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(Constants.C_LIBRARY_IO_DESCRIPTION,
 				Constants.C_LIBRARY_EXTENSION);
 		saveDialog.setFileFilter(filter);
-		saveDialog.setSelectedFile(new File(managedLibrary.getName() + Constants.C_LIBRARY_EXTENSION));
+		saveDialog.setSelectedFile(new File(managedLibrary.getName() + "." + Constants.C_LIBRARY_EXTENSION));
 		
 		//If the "Save" button was pressed
 		if (saveDialog.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			File path = saveDialog.getSelectedFile();
 			if (!path.getName().endsWith(Constants.C_LIBRARY_EXTENSION)) {	//add extension if needed
-		        path = new File(path.getAbsolutePath() + Constants.C_LIBRARY_EXTENSION);
+		        path = new File(path.getAbsolutePath() + "." + Constants.C_LIBRARY_EXTENSION);
 			}
 			
 			//Check if the file already exists and, if so, ask if it should be overwritten

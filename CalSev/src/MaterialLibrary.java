@@ -1,8 +1,16 @@
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * 
@@ -25,13 +33,56 @@ public class MaterialLibrary {
 		materialList = new Vector<Material>();
 		setName(libraryName);
 	}
+
+	/**
+	 * This method creates a new material library based on a xml file.
+	 * @param inputLibrary the file where the information is read from.
+	 * @throws ParserConfigurationException If an error occurred while parsing the file.
+	 * @throws SAXException If a general SAX exception occurred.
+	 * @throws IOException If a problem occurred while reading the file.
+	 */
+	public MaterialLibrary(File inputLibrary) throws ParserConfigurationException, SAXException, IOException, ClassCastException {
+		materialList = new Vector<Material>();
+		Document xmlInformation = XMLManager.loadXMLFromString(inputLibrary);
+		loadMaterialInformation(xmlInformation);
+		setModifiedStatus(false);
+	}
 	
 	/**
-	 * This method creates a new material library and sets its name as empty.
+	 * This method creates the materials from a given xml data structure.
+	 * @param xmlInformation The xml information containing a library (supposed to be read from a xml file).
+	 * TODO remove printf
 	 */
-	public MaterialLibrary() {
-		materialList = new Vector<Material>();
-		setName("");
+	private void loadMaterialInformation(Document xmlInformation) throws ClassCastException {
+		setName(xmlInformation.getDocumentElement().getAttribute(Constants.C_NAME_PROPERTY));
+		System.out.println(getName() + "\n----------------------------");
+
+		NodeList materialNodesList = xmlInformation.getElementsByTagName(Constants.C_MATERIAL_XML_TAG);
+		//For each material on the library
+		for (int temp = 0; temp < materialNodesList.getLength(); temp++) {
+
+			Node materialNode = materialNodesList.item(temp);
+			System.out.println("\nCurrent Element: " + materialNode.getNodeName());
+			
+			NodeList propertyNodesList = materialNode.getChildNodes();
+			HashMap<String, String> materialProperties = new HashMap<String, String>();
+			//For each property on the material
+			for (int temp2 = 0; temp2 < propertyNodesList.getLength(); temp2++) {
+				
+				Node propertyNode = propertyNodesList.item(temp2);
+				String propertyName = propertyNode.getNodeName();
+				String propertyValue = ((Element) propertyNode).getAttribute(Constants.C_VALUE_XML_PROPERTY);
+				materialProperties.put(propertyName, propertyValue);
+				System.out.println("\t" + propertyName + ": " + propertyValue);
+			}
+			
+			//create material and set properties
+			Material createdMaterial = new Material(materialProperties.get(Constants.C_NAME_PROPERTY));
+			for(String key: materialProperties.keySet()) {
+				createdMaterial.setProperty(key, materialProperties.get(key));
+			}
+			materialList.addElement(createdMaterial);
+		}
 	}
 	
 	/**
@@ -165,8 +216,7 @@ public class MaterialLibrary {
 	 * @throws TransformerException If an error occurred while writing the file.
 	 */
 	public void writeXMLFile(File path) throws ParserConfigurationException, TransformerException {
-		XMLManager manager = new XMLManager();
-		manager.writeLibrary(this, path);
+		XMLManager.writeLibrary(this, path);
 		setModifiedStatus(false);	//Once saved, it is considered as not modified
 	}
 }

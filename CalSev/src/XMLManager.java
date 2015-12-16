@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -13,6 +14,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * 
@@ -23,12 +25,6 @@ import org.w3c.dom.Element;
  *
  */
 public class XMLManager {
-
-	/**
-	 * This method creates a new manager for all XML operations.
-	 */
-	public XMLManager() {
-	}
 	
 	/**
 	 * This method writes the content of a library in an xml file.
@@ -37,14 +33,14 @@ public class XMLManager {
 	 * @throws ParserConfigurationException If an error occurred while parsing the information.
 	 * @throws TransformerException If an error occurred while writing the file
 	 */
-	public void writeLibrary(MaterialLibrary library, File path) throws ParserConfigurationException, TransformerException {
+	public static void writeLibrary(MaterialLibrary library, File path) throws ParserConfigurationException, TransformerException {
 		//Initial preparation
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 		Document document = documentBuilder.newDocument();
 		
 		//Library tag
-		Element libraryElement = document.createElement("MaterialLibrary");
+		Element libraryElement = document.createElement(Constants.C_GLOBAL_XML_TAG);
 		document.appendChild(libraryElement);
 		
 		Attr libNameAttribute = document.createAttribute(Constants.C_NAME_PROPERTY);
@@ -54,7 +50,7 @@ public class XMLManager {
 		//for each material on the library
 		for(Material material: library.getAllMaterial()) {
 			
-			Element materialElement = document.createElement("Material");
+			Element materialElement = document.createElement(Constants.C_MATERIAL_XML_TAG);
 			libraryElement.appendChild(materialElement);
 			
 			//for each property on the material
@@ -64,7 +60,7 @@ public class XMLManager {
 				Element propertyElement = document.createElement(couple[0]);
 				materialElement.appendChild(propertyElement);
 
-				Attr valueAttribute = document.createAttribute("Value");
+				Attr valueAttribute = document.createAttribute(Constants.C_VALUE_XML_PROPERTY);
 				valueAttribute.setValue(couple[1]);
 				propertyElement.setAttributeNode(valueAttribute);
 			}
@@ -78,9 +74,24 @@ public class XMLManager {
 		transformer.transform(domSource, streamResult);
 
 		//Show file in the terminal
-		StreamResult result = new StreamResult(System.out);
-		transformer.transform(domSource, result);
+		//StreamResult result = new StreamResult(System.out);
+		//transformer.transform(domSource, result);
 	}
 	
-	
+	/**
+	 * This method parses the information contained in an XML file.
+	 * @param file The file to read from
+	 * @return A structure with the information contained in the file.
+	 * @throws ParserConfigurationException If an error occurred while parsing the file.
+	 * @throws SAXException If a general SAX exception occurred.
+	 * @throws IOException If a problem occurred while reading the file.
+	 */
+	public static Document loadXMLFromString(File file) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(file);
+		doc.getDocumentElement().normalize();
+		
+		return doc;
+	}
 }
