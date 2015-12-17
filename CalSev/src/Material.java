@@ -1,20 +1,17 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * 
- */
-
-/**
  * @author david.merayo
- *
+ * @version 1.0.0
+ * This class manages the material behavior.
  */
 public class Material {
-	private HashMap<String, String> properties;
+	private LinkedHashMap<String, String> properties;
 	
 	/**
 	 * This method creates a new material.
@@ -22,15 +19,20 @@ public class Material {
 	 * TODO add by-default properties.
 	 */
 	public Material(String materialName) {
-		properties = new HashMap<String, String>();
-		setProperty(Constants.C_NAME_PROPERTY, materialName);
-
-		setProperty("C", "");
-		setProperty("V", "");
-		setProperty("Mn", "");
-		setProperty("Mg", "");
-		setProperty("O", "");
-		setProperty("N", "");
+		properties = new LinkedHashMap<String, String>();
+		
+		for(String propertyName: Constants.C_MATERIAL_PROPERTIES) {
+			setProperty(propertyName, "");
+		}
+		setName(materialName);
+	}
+	
+	/**
+	 * This method sets the material name (the property is created or modified).
+	 * @param value The new name.
+	 */
+	public void setName(String value) {
+		properties.put(Constants.C_NAME_PROPERTY, value);
 	}
 	
 	/**

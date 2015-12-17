@@ -1,5 +1,15 @@
-
+/**
+ * @author david.merayo
+ * @version 1.0.0
+ * This class contains all the application relevant constants
+ */
 public class Constants {
+
+	// Application properties
+	public static String C_APPLICATION_NAME = "CalSev";
+	public static String C_VERSION = "v1.0.0";
+	public static String C_APP_NAME_VERSION = C_APPLICATION_NAME + " " + C_VERSION;
+	public static String C_MAIN_WINDOW_TITLE = C_APP_NAME_VERSION;
 	
 	
 	// Main window properties
@@ -7,13 +17,6 @@ public class Constants {
 	public static int C_MAIN_PREFERED_POSITION_Y_AT_START = 100;
 	public static int C_MAIN_PREFERED_SIZE_X = 640;
 	public static int C_MAIN_PREFERED_SIZE_Y = 480;
-	
-	
-	// General window
-	public static String C_APPLICATION_NAME = "CalSev";
-	public static String C_VERSION = "v1.0.0";
-	public static String C_APP_NAME_VERSION = C_APPLICATION_NAME + " " + C_VERSION;
-	public static String C_MAIN_WINDOW_TITLE = C_APP_NAME_VERSION;
 
 	
 	// Tabs
@@ -32,12 +35,11 @@ public class Constants {
 	// Calculation tab
 	public static String C_SELECT_MATERIALS_LABEL = "Select materials:";
 	public static String C_MATERIAL_LIBRARY_NAME = "Materials library: ";
-	
 	public static String C_BROWSE_BUTTON = "Browse";
 	public static String C_ADD_MATERIALS_FROM_LIBRARY_BUTTON = ">>";
-	
 	public static String C_CALCULATION_STEPS_TITLE = "Calculation steps:";
 	public static String C_RESULTS_TITLE = "Results:";
+	public static String C_CLEAR_DATA_BUTTON = "Clear data";
 	
 	
 	//Library tab
@@ -47,9 +49,7 @@ public class Constants {
 	public static String C_ADD_MATERIAL_BUTTON = "Add material";
 	public static String C_CANCEL_BUTTON = "Cancel";
 	public static String C_SAVE_LIBRARY_AS_BUTTON = "Save as...";
-
 	public static String C_MANAGED_LIBRARY_NAME_LABEL = "Libary name: ";
-	
 	public static String C_VALUE_COLUMN = "Value";
 	public static String C_PROPERTY_COLUMN = "Property";
 	
@@ -63,9 +63,11 @@ public class Constants {
 			+ "Do you like to continue?";
 	public static String C_WANT_TO_OVERWRITE = "The selected file already exists.\n"
 			+ "Do you like to overwrite it?";
+	public static String C_WANT_TO_CLEAR_DATA = "Do you really want to clear all calculation data?";
 	public static String C_WARNING_TITLE = "Warning";
 
 	
+	//xml tags and properties
 	public static String C_LIBRARY_EXTENSION = "xml";
 	public static String C_LIBRARY_IO_DESCRIPTION = "Material library";
 	public static String C_GLOBAL_XML_TAG = "MaterialLibrary";
@@ -81,12 +83,12 @@ public class Constants {
 			+ "I've seen things you people wouldn't believe: Attack ships on fire off the shoulder of Orión.\n"
 			+ "I've watched c-beams glitter in the dark near the Tannhäuser Gate.\n"
 			+ "All those... moments will be lost in time, like tears... in rain. Time to die";
-
 	public static String C_ERROR_PROPERTY_NOT_FOUND = "The given property does not exist in this material.";
 	public static String C_ERROR_REPEATED_NAME = "The given material name already exist in this library.";
 	public static String C_ERROR_MATERIAL_NOT_FOUND = "The given material was not found.";
 	public static String C_ERROR_WHILE_EXPORTING_LIBRARY = "Something odd occurred while the library was been exported.";
 	public static String C_ERROR_READING_XML_FILE = "An error occurred while reading a library.";
+	public static String C_REPEATED_MATERIALS_LOADED = "Materials with repeated names are not allowed.";
 	
 	
 	// About window properties
@@ -113,5 +115,5 @@ public class Constants {
 	
 	//Material constants
 	public static String C_NAME_PROPERTY = "Name";
-	
+	public static String[] C_MATERIAL_PROPERTIES = {C_NAME_PROPERTY, "Standard/Code", "Mn", "Mo", "Ni", "Cu", "P", "Si", "V"};
 }

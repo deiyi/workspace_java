@@ -7,6 +7,11 @@ import java.net.URL;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
+/**
+ * @author david.merayo
+ * @version 1.0.0
+ * This class contains some standard methods
+ */
 public class GUIGeneralMethods {
 
 	/**

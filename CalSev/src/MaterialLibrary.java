@@ -1,26 +1,26 @@
 import java.io.File;
 import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import org.xml.sax.SAXException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-/**
- * 
- */
 
 /**
  * @author david.merayo
- *
+ * @version 1.0.0
+ * This class manages the library behavior.
  */
 public class MaterialLibrary {
+	
+	//Class properties
 	private String name;
 	private Vector<Material> materialList;
 	private boolean hasBeenModified = true;
@@ -51,18 +51,18 @@ public class MaterialLibrary {
 	/**
 	 * This method creates the materials from a given xml data structure.
 	 * @param xmlInformation The xml information containing a library (supposed to be read from a xml file).
-	 * TODO remove printf
+	 * @throw ClassCastException If there is a problem while parsing the information.
 	 */
 	private void loadMaterialInformation(Document xmlInformation) throws ClassCastException {
 		setName(xmlInformation.getDocumentElement().getAttribute(Constants.C_NAME_PROPERTY));
-		System.out.println(getName() + "\n----------------------------");
+		//System.out.println(getName() + "\n----------------------------");
 
 		NodeList materialNodesList = xmlInformation.getElementsByTagName(Constants.C_MATERIAL_XML_TAG);
 		//For each material on the library
 		for (int temp = 0; temp < materialNodesList.getLength(); temp++) {
 
 			Node materialNode = materialNodesList.item(temp);
-			System.out.println("\nCurrent Element: " + materialNode.getNodeName());
+			//System.out.println("\nCurrent Element: " + materialNode.getNodeName());
 			
 			NodeList propertyNodesList = materialNode.getChildNodes();
 			HashMap<String, String> materialProperties = new HashMap<String, String>();
@@ -73,7 +73,7 @@ public class MaterialLibrary {
 				String propertyName = propertyNode.getNodeName();
 				String propertyValue = ((Element) propertyNode).getAttribute(Constants.C_VALUE_XML_PROPERTY);
 				materialProperties.put(propertyName, propertyValue);
-				System.out.println("\t" + propertyName + ": " + propertyValue);
+				//System.out.println("\t" + propertyName + ": " + propertyValue);
 			}
 			
 			//create material and set properties
@@ -121,13 +121,26 @@ public class MaterialLibrary {
 	/**
 	 * This method adds a new material to the library
 	 * @param materialName The new material name.
-	 * @throws IllegalArgumentException If the "Name" property does not exist in this material.
+	 * @throws IllegalArgumentException If there already is a material in the library with the same name.
 	 */
 	public void addMaterial(String materialName) {
 		if (getMaterialNames().contains(materialName)) {
 			throw new IllegalArgumentException(Constants.C_ERROR_REPEATED_NAME);
 		}
 		materialList.addElement(new Material(materialName));
+		setModifiedStatus(true);
+	}
+	
+	/**
+	 * This method adds a new material to the library
+	 * @param material The new material.
+	 * @throws IllegalArgumentException If there already is a material in the library with the same name.
+	 */
+	public void addMaterial(Material material) {
+		if (getMaterialNames().contains(material.getName())) {
+			throw new IllegalArgumentException(Constants.C_ERROR_REPEATED_NAME);
+		}
+		materialList.addElement(material);
 		setModifiedStatus(true);
 	}
 	
@@ -188,6 +201,7 @@ public class MaterialLibrary {
 		return materialList.elementAt(index);
 	}
 	
+	
 	/**
 	 * This method sets a property on a given material.
 	 * @param materialName The material whose property should be modified.
@@ -201,6 +215,7 @@ public class MaterialLibrary {
 		setModifiedStatus(true);
 	}
 	
+	
 	/**
 	 * This method gets all the materials contained in this library.
 	 * @return The materials on the library.
@@ -208,6 +223,7 @@ public class MaterialLibrary {
 	public Vector<Material> getAllMaterial() {
 		return materialList;
 	}
+	
 	
 	/**
 	 * This method writes the library information into an xml file.
@@ -218,5 +234,42 @@ public class MaterialLibrary {
 	public void writeXMLFile(File path) throws ParserConfigurationException, TransformerException {
 		XMLManager.writeLibrary(this, path);
 		setModifiedStatus(false);	//Once saved, it is considered as not modified
+	}
+
+	
+	/**
+	 * This method empties the library.
+	 */
+	public void clear() {
+		materialList.clear();
+	}
+
+	
+	/**
+	 * This method checks whether the library is empty or not.
+	 * @return true if it is empty and false in any other case.
+	 */
+	public boolean isEmpty() {
+		return materialList.isEmpty();
+	}
+
+	/**
+	 * This method adds all the elements contained in the given library.
+	 * @param libraryToAdd The library whose materials should be added.
+	 * @throws IllegalArgumentException If one of the new materials is repeated (check naming).
+	 */
+	public void mergeAndCheck(MaterialLibrary libraryToAdd) throws IllegalArgumentException {
+		//Check if no name is repeated
+		Vector<String> materialsToAddNames = libraryToAdd.getMaterialNames();
+		for (String name: materialsToAddNames) {
+			if (materialList.contains(name)) {
+				throw new IllegalArgumentException(Constants.C_REPEATED_MATERIALS_LOADED);
+			}
+		}
+		
+		//Add all materials
+		for (Material materialToAdd: libraryToAdd.getAllMaterial()) {
+			addMaterial(materialToAdd);
+		}
 	}
 }

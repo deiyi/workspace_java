@@ -1,21 +1,40 @@
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.JPanel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 
+import org.xml.sax.SAXException;
+
+/**
+ * @author david.merayo
+ * @version 1.0.0
+ * This class creates the Calculation Panel and manages its actions.
+ */
 @SuppressWarnings("serial")
 public class CalculationPanel extends JPanel {
 
+	//GUI elements
 	private JPanel calculationMaterialsPanel;
 	private JPanel calculationStepsPanel;
 	private JPanel resultsPanel;
@@ -33,13 +52,21 @@ public class CalculationPanel extends JPanel {
 	private JList<String> materialsOnLibraryList;
 	private JLabel selectMaterialLabel;
 	
+	//Class properties
+	private MaterialLibrary calculationMaterials;
+	private JButton clearDataButton;
+	
+	
 	/**
 	 * Create the panel.
 	 */
 	public CalculationPanel() {
 		super();
 		initializeCalculationPanel();
+		
+		calculationMaterials = new MaterialLibrary(" ");
 	}
+	
 	
 	/**
 	 * Draw the Calculation panel and add all its objects.
@@ -79,6 +106,20 @@ public class CalculationPanel extends JPanel {
 			gbc_selectMaterialLabel.gridy = 0;
 			calculationMaterialsPanel.add(selectMaterialLabel, gbc_selectMaterialLabel);
 			
+			clearDataButton = new JButton(Constants.C_CLEAR_DATA_BUTTON);
+			clearDataButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					actionOnClicClearData();
+				}
+			});
+			GridBagConstraints gbc_clearDataButton = new GridBagConstraints();
+			gbc_clearDataButton.fill = GridBagConstraints.HORIZONTAL;
+			gbc_clearDataButton.gridwidth = 2;
+			gbc_clearDataButton.insets = new Insets(0, 0, 5, 5);
+			gbc_clearDataButton.gridx = 1;
+			gbc_clearDataButton.gridy = 1;
+			calculationMaterialsPanel.add(clearDataButton, gbc_clearDataButton);
+			
 			calculationMaterialsScrollPanel = new JScrollPane();
 			GridBagConstraints gbc_calculationMaterialsScrollPanel = new GridBagConstraints();
 			gbc_calculationMaterialsScrollPanel.fill = GridBagConstraints.BOTH;
@@ -95,7 +136,6 @@ public class CalculationPanel extends JPanel {
 			
 			calculationLibraryLabel = new JLabel(Constants.C_MATERIAL_LIBRARY_NAME);
 			GridBagConstraints gbc_calculationLibraryLabel = new GridBagConstraints();
-			gbc_calculationLibraryLabel.gridwidth = 3;
 			gbc_calculationLibraryLabel.anchor = GridBagConstraints.WEST;
 			gbc_calculationLibraryLabel.insets = new Insets(0, 0, 5, 5);
 			gbc_calculationLibraryLabel.gridx = 0;
@@ -103,6 +143,25 @@ public class CalculationPanel extends JPanel {
 			calculationMaterialsPanel.add(calculationLibraryLabel, gbc_calculationLibraryLabel);
 			
 			libraryPathTextBox = new JTextField();
+			libraryPathTextBox.getDocument().addDocumentListener(new DocumentListener() {	//Add change listeners
+			    public void changedUpdate(DocumentEvent e) {
+			    	checkEnabledButtons();
+			    }
+			    public void removeUpdate(DocumentEvent e) {
+			    	checkEnabledButtons();
+			    }
+			    public void insertUpdate(DocumentEvent e) {
+			    	checkEnabledButtons();
+			    }
+			
+			    public void checkEnabledButtons() {
+			       if (libraryPathTextBox.getText().isEmpty()) {
+			    	   addLibraryToCalculationButton.setEnabled(false);	//The button is disabled when the textField is empty
+			       } else {
+			    	   addLibraryToCalculationButton.setEnabled(true);
+			       }
+			    }
+			});
 			GridBagConstraints gbc_libraryPathTextBox = new GridBagConstraints();
 			gbc_libraryPathTextBox.insets = new Insets(0, 0, 5, 5);
 			gbc_libraryPathTextBox.fill = GridBagConstraints.HORIZONTAL;
@@ -226,21 +285,89 @@ public class CalculationPanel extends JPanel {
 		}
 	}
 	
+	
 	/**
 	 * Action executed when the Browse Library button is pressed.
-	 * TODO Add code
 	 */
 	private void actionOnClicBrowseLibrary() {
-		
+		//Initialize Open... dialog
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setAcceptAllFileFilterUsed(false);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(Constants.C_LIBRARY_IO_DESCRIPTION,
+				Constants.C_LIBRARY_EXTENSION);
+        fileChooser.addChoosableFileFilter(filter);
+        
+        //If approved, write the path on the TextField
+		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			libraryPathTextBox.setText(file.getPath());
+		}
 	}
+	
 	
 	/**
 	 * Action executed when the Add material (>>) button is pressed.
-	 * TODO Add code
 	 */
 	private void actionOnClicAddMaterialsToList() {
-		
+		try {
+			MaterialLibrary libraryToAdd = new MaterialLibrary(new File(libraryPathTextBox.getText()));
+			calculationMaterials.mergeAndCheck(libraryToAdd);
+			
+			//Add materials to the materials list
+			for(String name: libraryToAdd.getMaterialNames()) {
+				GUIGeneralMethods.addElementToStringJList(materialsOnLibraryList, name);
+			}
+			libraryPathTextBox.setText("");
+			
+		} catch (ClassCastException | ParserConfigurationException | SAXException | IOException e) {
+			JOptionPane.showMessageDialog(null, Constants.C_ERROR_READING_XML_FILE, Constants.C_ERROR_DIALOG_TITLE,
+					JOptionPane.ERROR_MESSAGE); 
+			e.printStackTrace();
+		} catch(IllegalArgumentException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), Constants.C_ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE); 
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * Action executed when the Clear data button is pressed.
+	 */
+	private void actionOnClicClearData() {
+		if (!calculationMaterials.isEmpty()) {
+			int dialogResult = JOptionPane.showConfirmDialog(null, Constants.C_WANT_TO_CLEAR_DATA, 
+					Constants.C_WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+			if(dialogResult == JOptionPane.YES_OPTION){
+				clearCalculationData();
+			}
+		} else {
+			clearCalculationData();
+		}
+	}
+	
+	
+	/**
+	 * This method clears all calculation data.
+	 */
+	private void clearCalculationData() {
+		calculationMaterials.clear();
+		clearAllCalculationTabData();
 	}
 
+	/**
+	 * This methods clears all information stored in the Calculation tab.
+	 */
+	private void clearAllCalculationTabData() {
+		libraryPathTextBox.setText("");
+		addLibraryToCalculationButton.setEnabled(false);
+		
+		//Clear data on materials list
+		DefaultListModel<String> listModel = (DefaultListModel<String>) materialsOnLibraryList.getModel();
+        listModel.removeAllElements();
+		
+        //Clear data on JTables
+		((DefaultTableModel)resultsTable.getModel()).setRowCount(0);	//Remove content
+		((DefaultTableModel)calculationStepsTable.getModel()).setRowCount(0);	//Remove content
+	}
 }
 

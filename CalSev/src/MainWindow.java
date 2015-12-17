@@ -1,23 +1,30 @@
 import java.awt.EventQueue;
+import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
-import java.awt.BorderLayout;
-
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 
+import java.io.IOException;
+
+import java.net.URISyntaxException;
+import java.net.URL;
+
+/**
+ * @author david.merayo
+ * @version 1.0.0
+ * This class manages the application main window: the class creates the frame and fills it.
+ * This class also contains the main method.
+ */
 public class MainWindow {
 
+	//GUI elements
 	private JFrame frame;
 	private JTabbedPane mainTabbedPane;
 	private JPanel panelCalculation, panelLibrary;
@@ -28,23 +35,21 @@ public class MainWindow {
 	private JMenuItem menuItemHelp;
 	private JMenuItem menuItemAbout;
 	
-
 	/**
 	 * Launch the application.
 	 * @param args: Arguments received by the program.
-	 * TODO remove //
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				//try {
+				try {
 					MainWindow window = new MainWindow();
 					window.frame.setVisible(true);
-				//} catch (Exception e) {
-				//	JOptionPane.showMessageDialog(null, Constants.C_GLOBAL_ERROR, Constants.C_ERROR_DIALOG_TITLE,
-				//			JOptionPane.ERROR_MESSAGE); 
-				//	e.printStackTrace();
-				//}
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, Constants.C_GLOBAL_ERROR, Constants.C_ERROR_DIALOG_TITLE,
+							JOptionPane.ERROR_MESSAGE); 
+					e.printStackTrace();
+				}
 			}
 		});
 	}

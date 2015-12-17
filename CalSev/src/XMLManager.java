@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,15 +15,13 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 import org.xml.sax.SAXException;
 
 /**
- * 
- */
-
-/**
  * @author david.merayo
- *
+ * @version 1.0.0
+ * This class manages standard XML actions.
  */
 public class XMLManager {
 	
@@ -39,10 +38,11 @@ public class XMLManager {
 		DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 		Document document = documentBuilder.newDocument();
 		
-		//Library tag
+		//Create library tag
 		Element libraryElement = document.createElement(Constants.C_GLOBAL_XML_TAG);
 		document.appendChild(libraryElement);
 		
+		//Add library attributes
 		Attr libNameAttribute = document.createAttribute(Constants.C_NAME_PROPERTY);
 		libNameAttribute.setValue(library.getName());
 		libraryElement.setAttributeNode(libNameAttribute);
@@ -50,6 +50,7 @@ public class XMLManager {
 		//for each material on the library
 		for(Material material: library.getAllMaterial()) {
 			
+			//Create material tag
 			Element materialElement = document.createElement(Constants.C_MATERIAL_XML_TAG);
 			libraryElement.appendChild(materialElement);
 			
@@ -57,9 +58,11 @@ public class XMLManager {
 			List<String[]> materialProperties = material.getPropertiesAndValues();
 			for (String[] couple: materialProperties) {
 				
+				//Create property tag
 				Element propertyElement = document.createElement(couple[0]);
 				materialElement.appendChild(propertyElement);
 
+				//Add property attribute
 				Attr valueAttribute = document.createAttribute(Constants.C_VALUE_XML_PROPERTY);
 				valueAttribute.setValue(couple[1]);
 				propertyElement.setAttributeNode(valueAttribute);
@@ -73,7 +76,7 @@ public class XMLManager {
 		StreamResult streamResult = new StreamResult(path);
 		transformer.transform(domSource, streamResult);
 
-		//Show file in the terminal
+		//Show xml information in the terminal
 		//StreamResult result = new StreamResult(System.out);
 		//transformer.transform(domSource, result);
 	}

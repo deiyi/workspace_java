@@ -1,17 +1,5 @@
 import javax.swing.JFrame;
-import java.awt.BorderLayout;
-
 import javax.swing.JOptionPane;
-
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.awt.event.ActionEvent;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import javax.swing.JPanel;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
@@ -23,20 +11,38 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.SAXException;
-
 import javax.swing.JList;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.event.ListSelectionEvent;
 
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.BorderLayout;
 
+import java.io.File;
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.xml.sax.SAXException;
+
+/**
+ * @author david.merayo
+ * @version 1.0.0
+ * This class creates the Library Panel and manages its actions.
+ */
 @SuppressWarnings("serial")
 public class LibraryPanel extends JPanel {
 
+	//GUI elements
 	private JFrame frame;
 	private JPanel libraryManagementPanel;
 	private JPanel materialManagementPanel;
@@ -51,6 +57,7 @@ public class LibraryPanel extends JPanel {
 	private JList<String> availableMaterialsList;
 	private JScrollPane availableMaterialsScrollPanel;
 	
+	//Class properties
 	private MaterialLibrary managedLibrary;
 	
 	/**
@@ -133,7 +140,6 @@ public class LibraryPanel extends JPanel {
 			gbc_availableMaterialsScrollPanel.gridy = 3;
 			libraryManagementPanel.add(availableMaterialsScrollPanel, gbc_availableMaterialsScrollPanel);
 			
-			//String item2[] = {"ASME mat1", "mat2", "KTA mat3", "mat4", "mat5", "mat6", "mat7", "mat8", "mat9"};
 			availableMaterialsList = new JList<String>();
 			availableMaterialsList.addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent arg0) {
@@ -189,32 +195,7 @@ public class LibraryPanel extends JPanel {
 			gbc_materialPropertiesScrollPanel.gridx = 0;
 			gbc_materialPropertiesScrollPanel.gridy = 1;
 			materialManagementPanel.add(materialPropertiesScrollPanel, gbc_materialPropertiesScrollPanel);
-			
-			/*
-			List<String> columns = new ArrayList<String>();
-	        List<String[]> values = new ArrayList<String[]>();
- 
-	        columns.add("Property");
-	        columns.add("Value");
-	        
-	        values.add(new String[] {"Name", "ASME mat1"});
-	        values.add(new String[] {"Norm", "ASME"});
-	        values.add(new String[] {"Fósforo", "0.15"});
-	        values.add(new String[] {"Cobre", "0.15"});
-	        values.add(new String[] {"Níquel", "0.1"});
-	        values.add(new String[] {"Niobio", "0.05"});
-	        values.add(new String[] {"Tantalio ", "0.05"});
-	        values.add(new String[] {"Cobalto.", "0.05"});
-	        values.add(new String[] {"Nitrógeno", "0.05"});
-	        values.add(new String[] {"Manganeso", "0.05"});
-	        values.add(new String[] {"Molibdeno", "0.05"});
-	        values.add(new String[] {"Silicio", "0.05"});
-	        values.add(new String[] {"Azufre", "0.1"});
-	        values.add(new String[] {"Cromo", "0.05"});
-	        values.add(new String[] {"Vanadio", "0.1"});
-	        
-	        TableModel tableModel = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
-			materialPropertiesTable = new JTable(tableModel);*/
+
 			materialPropertiesTable = new JTable() {
 				public boolean isCellEditable(int row,int column) {
 					switch(column){             
@@ -237,7 +218,6 @@ public class LibraryPanel extends JPanel {
 	
 	/**
 	 * Action executed when the Open library button is pressed.
-	 * TODO Add code
 	 */
 	private void actionOnClicOpenLibrary() {
 		if (managedLibrary == null) {
@@ -254,7 +234,7 @@ public class LibraryPanel extends JPanel {
 	}
 	
 	/**
-	 * TODO extension
+	 * This method opens a library and loads its information into the GUI.
 	 */
 	private void openLibrary() {
 		//Initialize Open... dialog
@@ -266,6 +246,8 @@ public class LibraryPanel extends JPanel {
         
 		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
+			
+			//Try to read the xml file and load it
 			try {
 				managedLibrary = new MaterialLibrary(file);
 				setInterfaceAfterOpenLibrary();
@@ -279,7 +261,6 @@ public class LibraryPanel extends JPanel {
 	
 	/**
 	 * This method sets all the elements of the interface after opening a library.
-	 * TODO Verify that it selects nothing in the Jlist
 	 */
 	private void setInterfaceAfterOpenLibrary() {
 		setLibraryNameOnLibraryTab(managedLibrary.getName());
@@ -422,12 +403,14 @@ public class LibraryPanel extends JPanel {
 	private void enableButtonsAfterNewLibrary() {
 		addMaterialButton.setEnabled(true);
 		saveAsButton.setEnabled(true);
+		deleteMaterialButton.setEnabled(false);
 		
+		//Clear materials list
 		DefaultListModel<String> listModel = (DefaultListModel<String>) availableMaterialsList.getModel();
         listModel.removeAllElements();
 		
+        //Clear table data
 		((DefaultTableModel)materialPropertiesTable.getModel()).setRowCount(0);	//Remove content
-		deleteMaterialButton.setEnabled(false);
 	}
 	
 	/**
@@ -437,7 +420,6 @@ public class LibraryPanel extends JPanel {
 		if (availableMaterialsList.getSelectedIndex() != -1) {	//If a material is selected
 			deleteMaterialButton.setEnabled(true);
 			Material selectedMaterial = managedLibrary.getMaterialByName(availableMaterialsList.getSelectedValue());
-			//System.out.println(selectedMaterial.getName());
 			showMaterialData(selectedMaterial);
 		} else {
 			deleteMaterialButton.setEnabled(false);
