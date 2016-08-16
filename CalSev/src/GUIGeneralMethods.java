@@ -1,5 +1,7 @@
 import java.awt.Desktop;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -73,5 +75,34 @@ public class GUIGeneralMethods {
 	 */
 	public static void openWebPage(URL url) throws URISyntaxException, IOException {
         openWebPage(url.toURI());
+	}
+	
+	/**
+	 * This method checks whether a string is a digit or not
+	 * @param str String to be checked
+	 * @return true if it could be parsed as double and false in any other case.
+	 */
+	public static boolean isNumeric(String str) {  
+	    try {    
+	        Double.parseDouble(str);    
+	    } catch(NumberFormatException nfe) {    
+	        return false;    
+	    }    
+	    
+	    return true;    
+	}
+	
+	/**
+	 * This method round a decimal number as required
+	 * @param value The number to be rounded.
+	 * @param places Decimal places required.
+	 * @return The rounded String.
+	 */
+	public static String round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	    return new Double(bd.doubleValue()).toString();
 	}
 }

@@ -1,28 +1,35 @@
 import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Vector;
 
-import javax.swing.JPanel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
 
 import org.xml.sax.SAXException;
 
@@ -92,7 +99,7 @@ public class CalculationPanel extends JPanel {
 			
 			this.add(calculationMaterialsPanel, gbc_calculationMaterialsPanel);
 			GridBagLayout gbl_calculationMaterialsPanel = new GridBagLayout();
-			gbl_calculationMaterialsPanel.columnWidths = new int[]{280, 0, 0, 69, 0};
+			gbl_calculationMaterialsPanel.columnWidths = new int[]{204, 0, 27, 117, 0};
 			gbl_calculationMaterialsPanel.rowHeights = new int[]{25, 0, 0, 0, 0};
 			gbl_calculationMaterialsPanel.columnWeights = new double[]{1.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 			gbl_calculationMaterialsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
@@ -129,8 +136,12 @@ public class CalculationPanel extends JPanel {
 			calculationMaterialsPanel.add(calculationMaterialsScrollPanel, gbc_calculationMaterialsScrollPanel);
 			
 			{
-				//String item[] = {"ASME mat1", "mat2", "KTA mat3", "mat4", "mat5", "mat6", "mat7", "mat8", "mat9"};
 				materialsOnLibraryList = new JList<String>();
+				materialsOnLibraryList.addListSelectionListener(new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent arg0) {
+						materialsOnLibraryListSelectionChanged();
+					}
+				});
 				calculationMaterialsScrollPanel.setViewportView(materialsOnLibraryList);
 			}
 			
@@ -214,38 +225,11 @@ public class CalculationPanel extends JPanel {
 			calculationStepsPanel.add(calculationStepsScrollPanel, BorderLayout.CENTER);
 			
 			{
-				/*List<String> columns = new ArrayList<String>();
-		        List<String[]> values = new ArrayList<String[]>();
-     
-		        columns.add("chemical element");
-		        columns.add("Ri");
-		        columns.add("ASME mat1 SL");
-		        columns.add("ASME mat2 SL");
-		        columns.add("Le");
-		        columns.add("SL calculation method");
-		        columns.add("SL (ASME mat1 SL)");
-		        columns.add("SL (ASME mat2 SL)");
-		        columns.add("SL (ASME mat1 SL) x pi");
-		        columns.add("SL (ASME mat2 SL) x pi");
-
-		        values.add(new String[] {"Fósforo", "0.15", "0.025", "0.012", "0.02", "CASO 1", "1.00", "5.00", "0.15", "0.75"});
-		        values.add(new String[] {"Cobre", "0.15", "0.20", "0.12", "0.10", "CASO 1", "1.00", "1.00", "0.15", "0.15"});
-		        values.add(new String[] {"Níquel", "0.1", "1.00", "0.80", "1.00", "CASO 1", "2.00", "3.00", "0.2", "0.3"});
-		        values.add(new String[] {"Niobio", "0.05", "0.01", "NE", "NA", "CASO 2", "3.00", "1.00", "0.15", "0.05"});
-		        values.add(new String[] {"Tantalio ", "0.05", "NE", "0.03", "NA", "CASO 2", "1.00", "3.00", "0.05", "0.15"});
-		        values.add(new String[] {"Cobalto.", "0.05", "NE", "0.03", "NA", "CASO2", "1.00", "3.00", "0.05", "0.15"});
-		        values.add(new String[] {"Nitrógeno", "0.05", "NE", "0.01", "NA", "CASO 2", "1.00", "3.00", "0.05", "0.15"});
-		        values.add(new String[] {"Manganeso", "0.05", "1.50", "1.50", "NA", "CASO 3", "5.00", "5.00", "0.25", "0.25"});
-		        values.add(new String[] {"Molibdeno", "0.05", "0.60", "0.55", "NA", "CASO 4", "5.00", "4.60", "0.25", "0.23"});
-		        values.add(new String[] {"Silicio", "0.05", "0.40", "0.30", "NA", "CASO 4", "3.75", "5.00", "0.1875", "0.25"});
-		        values.add(new String[] {"Azufre", "0.1", "0.025", "0.008", "NA", "CASO 4", "1.60", "5.00", "0.16", "0.5"});
-		        values.add(new String[] {"Cromo", "0.05", "0.25", "0.20", "NA", "CASO 4", "4.00", "5.00", "0.2", "0.25"});
-		        values.add(new String[] {"Vanadio", "0.1", "0.05", "0.02", "NA", "CASO 4", "2.00", "5.00", "0.2", "0.5"});
-		        
-		        TableModel tableModel = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
-				
-				calculationStepsTable = new JTable(tableModel);*/
-				calculationStepsTable = new JTable();
+				calculationStepsTable = new JTable() {
+					public boolean isCellEditable(int row,int column) {
+						return false; 
+					}
+				}; 
 				calculationStepsScrollPanel.setViewportView(calculationStepsTable);
 			}
 		}
@@ -267,19 +251,11 @@ public class CalculationPanel extends JPanel {
 			resultsPanel.add(resultsScrollPanel, BorderLayout.CENTER);
 			
 			{
-				/*List<String> columns = new ArrayList<String>();
-		        List<String[]> values = new ArrayList<String[]>();
-     
-		        columns.add("Material");
-		        columns.add("Global SL");
-
-		        values.add(new String[] {"ASME mat1", "2.05"});
-		        values.add(new String[] {"KTA mat3", "3.68"});
-
-		        
-		        TableModel tableModel = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
-				resultsTable = new JTable(tableModel);*/
-				resultsTable = new JTable();
+				resultsTable = new JTable() {
+					public boolean isCellEditable(int row,int column) {
+						return false; 
+					}
+				}; 
 				resultsScrollPanel.setViewportView(resultsTable);
 			}
 		}
@@ -368,6 +344,314 @@ public class CalculationPanel extends JPanel {
         //Clear data on JTables
 		((DefaultTableModel)resultsTable.getModel()).setRowCount(0);	//Remove content
 		((DefaultTableModel)calculationStepsTable.getModel()).setRowCount(0);	//Remove content
+	}
+	
+	/**
+	 * This method is executed when the material selection changed.
+	 */
+	private void materialsOnLibraryListSelectionChanged() {
+		MaterialLibrary auxLibrary = new MaterialLibrary(" ");
+		
+		int[] selectedMaterials = materialsOnLibraryList.getSelectedIndices();
+		if (selectedMaterials.length > 0) {
+			//Get all the selected materials and add them to the auxiliary library
+			for (int index: selectedMaterials){
+				String selectedMaterial = materialsOnLibraryList.getModel().getElementAt(index);
+				auxLibrary.addMaterial(calculationMaterials.getMaterialByName(selectedMaterial));
+			}
+			
+			performCalculationAndShowResults(auxLibrary);
+		} else {
+	        //Clear data on JTables
+			((DefaultTableModel)resultsTable.getModel()).setRowCount(0);
+			((DefaultTableModel)calculationStepsTable.getModel()).setRowCount(0);
+		}
+	}
+
+	/**
+	 * This method performs the calculations and shows the results.
+	 * @param library The library containing the materials used to perform the calculus.
+	 */
+	private void performCalculationAndShowResults(MaterialLibrary library) {
+		LinkedHashMap<String, LinkedHashMap<String, String>> calculationResults = performCalculation(library);
+		
+		showSLCalculationSteps(calculationResults);
+		showSLFinalResults(calculationResults);
+	}
+
+
+	/**
+	 * This method shows the intermediate weighted SL for each material and property.
+	 * @param calculationResults The values to be shown.
+	 */
+	private void showSLCalculationSteps(LinkedHashMap<String, LinkedHashMap<String, String>> calculationResults) {
+		//Show results
+        List<String> columns = new ArrayList<String>();
+        List<String[]> values = new ArrayList<String[]>();
+
+        //Set column titles
+        columns.add(Constants.C_NAME_PROPERTY);
+        for(String elementName: Constants.C_SHOWN_PROPERTIES) {
+            columns.add(elementName);
+        }
+        
+        //for each material
+        for (String materialName: calculationResults.keySet()) {
+        	LinkedHashMap<String, String> materialSLData = calculationResults.get(materialName);
+        	
+        	Vector<String> row = new Vector<String>();
+        	row.add(materialName);
+        	for(String propertyName: Constants.C_SHOWN_PROPERTIES) {
+        		double value = new Double(materialSLData.get(propertyName));
+        		row.add(GUIGeneralMethods.round(value, 2));
+        		//System.out.println(materialName + "\t" + propertyName + ": " + materialSLData.get(propertyName));
+        	}
+        	values.add(row.toArray(new String[] {}));
+        }
+
+        TableModel tableModel = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
+        calculationStepsTable.setModel(tableModel);
+	}
+
+
+	/**
+	 * This method shows the final SL results.
+	 * @param calculationResults The intermediate calculation SL results.
+	 */
+	private void showSLFinalResults(LinkedHashMap<String, LinkedHashMap<String, String>> calculationResults) {
+		LinkedHashMap<String, Double> finalChemicalResults = calculateFinalChemicalResults(calculationResults);
+		LinkedHashMap<String, Double> finalMechanicalResults = calculateFinalMechanicalResults(calculationResults);
+		
+		//Show results
+        List<String> columns = new ArrayList<String>();
+        List<String[]> values = new ArrayList<String[]>();
+
+        //Set column titles
+        columns.add(Constants.C_NAME_PROPERTY);
+        columns.add(Constants.C_CHEMICAL_SL_VALUE_COLUMN);
+        columns.add(Constants.C_MECHANICAL_SL_VALUE_COLUMN);
+        columns.add(Constants.C_TOTAL_SL_VALUE_COLUMN);
+        
+        //for each material
+        for (String materialName: finalChemicalResults.keySet()) {
+    		double chemicalSLValue = new Double(finalChemicalResults.get(materialName));
+    		double mechanicalSLValue = new Double(finalMechanicalResults.get(materialName));
+    		double totalSLValue = new Double(chemicalSLValue * Constants.C_RI_CHEMICAL_MECHANICAL_TOTAL[0]
+    				+ mechanicalSLValue * Constants.C_RI_CHEMICAL_MECHANICAL_TOTAL[1]);
+    		
+            values.add(new String[] {materialName, GUIGeneralMethods.round(chemicalSLValue, 2), 
+            		GUIGeneralMethods.round(mechanicalSLValue, 2), GUIGeneralMethods.round(totalSLValue, 2)});
+        }
+
+        TableModel tableModel = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
+		resultsTable.setModel(tableModel);
+	}
+
+
+	/**
+	 * This method calculates the final chemical methodology results.
+	 * @param calculationResults The intermediate SL for each property and material.
+	 * @return The final SL for each material.
+	 */
+	private LinkedHashMap<String, Double> calculateFinalChemicalResults(
+			LinkedHashMap<String, LinkedHashMap<String, String>> calculationResults) {
+		LinkedHashMap<String, Double> finalResults = new LinkedHashMap<String, Double>();
+		
+		//for each material and each property, sum
+		for(String materialName: calculationResults.keySet()) {
+			double finalSLValue = 0;
+			for (String propertyName: Constants.C_ALL_CASES_MATERIAL_PROPERTIES) {
+				finalSLValue += Double.parseDouble(calculationResults.get(materialName).get(propertyName));
+			}
+			finalResults.put(materialName, finalSLValue);
+		}
+		
+		return finalResults;
+	}
+
+
+	/**
+	 * This method calculates the final mechanical methodology results.
+	 * @param calculationResults The intermediate SL for each property and material.
+	 * @return The final SL for each material.
+	 */
+	private LinkedHashMap<String, Double> calculateFinalMechanicalResults(
+			LinkedHashMap<String, LinkedHashMap<String, String>> calculationResults) {
+		LinkedHashMap<String, Double> finalResults = new LinkedHashMap<String, Double>();
+		
+		//for each material and each property, sum
+		for(String materialName: calculationResults.keySet()) {
+			double finalSLValue = 0;
+			for (String propertyName: Constants.C_MECHANICAL_PROPERTIES) {
+				finalSLValue += Double.parseDouble(calculationResults.get(materialName).get(propertyName));
+			}
+			finalResults.put(materialName, finalSLValue);
+		}
+		
+		return finalResults;
+	}
+
+
+	/**
+	 * This method calculates all the weighted stringency levels
+	 * @param library The library containing the materials used to perform the calculus.
+	 * @return The weighted stringency levels for each material.
+	 */
+	private LinkedHashMap<String, LinkedHashMap<String, String>> performCalculation(MaterialLibrary library) {
+		LinkedHashMap<String, LinkedHashMap<String, String>> result = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+		
+		//For each material considered in the calculus
+		for (Material material: library.getAllMaterial()) {
+			String materialName = material.getName();
+			LinkedHashMap<String, String> materialStringencyResults = new LinkedHashMap<String, String>();
+			
+			//for each material property
+			for (String property: material.getPropertyNames()) {
+				double stringencyLevel = 1.0 ;	//Initialize variable, just in case...
+				double ri = Constants.getRiValueFor(property);
+				
+				//Calculation is different depending on the case
+				if (Arrays.asList(Constants.C_CASE1_MATERIAL_PROPERTIES).contains(property)) {
+					double minLs = calculateMinLs(library, property);
+					stringencyLevel = case1Calculation(material, property, minLs);
+				} else if (Arrays.asList(Constants.C_CASE2_MATERIAL_PROPERTIES).contains(property)) {
+					stringencyLevel = case2Calculation(material, property);
+				} else if (Arrays.asList(Constants.C_CASE3_MATERIAL_PROPERTIES).contains(property)) {
+					double maxLs = calculateMaxLs(library, property);
+					stringencyLevel = case3Calculation(material, property, maxLs);
+				} else if (Arrays.asList(Constants.C_MECHANICAL_PROPERTIES).contains(property)) {
+					double maxLs = calculateMaxLs(library, property);
+					stringencyLevel = case3Calculation(material, property, maxLs);
+				}
+				
+				//Stringecy level is weighted
+				materialStringencyResults.put(property, Double.toString(stringencyLevel * ri));
+			}
+			result.put(materialName, materialStringencyResults);
+		}
+		
+		return result;
+	}
+
+
+	/**
+	 * This method calculates the maximum Ls value for a given property for all the materials in a given library.
+	 * @param library The library containing the materials
+	 * @param property The relevant property we are dealing with
+	 * @return The maximum Ls value or 0 if it is never specified (in this case, the Case 3 calculation will always return 1.0).
+	 */
+	private double calculateMaxLs(MaterialLibrary library, String property) {
+		double maximum = 0;
+		
+		for(Material material: library.getAllMaterial()){
+			try {    
+				double numericPropValue = Double.parseDouble(material.getPropertyValue(property));
+				maximum = numericPropValue > maximum ? numericPropValue : maximum;
+		    } catch(NumberFormatException nfe) {}	//Fail while parsing double
+		}
+		
+		return maximum;
+	}
+
+
+	/**
+	 * This method calculates the minimum Ls value for a given property for all the materials in a given library.
+	 * @param library The library containing the materials
+	 * @param property The relevant property we are dealing with
+	 * @return The minimum Ls value or 100 if it is never specified (in this case, the Case 1 calculation will always return 1.0).
+	 */
+	private double calculateMinLs(MaterialLibrary library, String property) {
+		double minimum = 100;
+		
+		for(Material material: library.getAllMaterial()){
+			try {    
+				double numericPropValue = Double.parseDouble(material.getPropertyValue(property));
+		        minimum = numericPropValue < minimum ? numericPropValue : minimum;
+		    } catch(NumberFormatException nfe) {}	//Fail while parsing double
+		}
+		
+		return minimum;
+	}
+	
+	
+	/**
+	 * This method performs the case 1 calculations.
+	 * @param material Material whose properties are been treated
+	 * @param property The property to treat
+	 * @param minLs The minimum Ls value found in the library.
+	 * @return The Stringency Level related to this property.
+	 */
+	private double case1Calculation(Material material, String property, double minLs) {
+		String propertyValue = material.getPropertyValue(property);
+		
+		if (GUIGeneralMethods.isNumeric(propertyValue)) {
+			double valueLs = Double.parseDouble(propertyValue);
+			double resultSL = 5.0 * minLs / valueLs;
+			resultSL = resultSL < 1.0 ? 1.0 : resultSL;
+			resultSL = resultSL > 5.0 ? 5.0 : resultSL;
+			
+			return resultSL;
+
+		} else {	//If requirement is specified or is not a number
+			return 1.0;		
+		}
+	}
+
+
+	/**
+	 * This method performs the case 2 calculations.
+	 * @param material Material whose properties are been treated
+	 * @param property The property to treat
+	 * @return The Stringency Level related to this property.
+	 */
+	private double case2Calculation(Material material, String property) {
+		String propertyValue = material.getPropertyValue(property);
+		
+		//If requirement is not specified or is not a number
+		if (!GUIGeneralMethods.isNumeric(propertyValue)) {
+			return 1.0;		
+			
+		} else {
+			double valueLs = Double.parseDouble(propertyValue);
+			double valueLe = Double.parseDouble(Constants.getLeValueFor(property));
+			double ratio = valueLs / valueLe;
+			
+			if (ratio >= 1.0) {
+				return 1.0;
+			} else if ((ratio < 1.0) && (ratio >= 0.9)) {
+				return 2.0;
+			} else if ((ratio < 0.9) && (ratio >= 0.8)) {
+				return 3.0;
+			} else if ((ratio < 0.8) && (ratio >= 0.7)) {
+				return 4.0;
+			} else {	//ratio < 0.7
+				return 5.0;
+			}
+		}
+	}
+	
+	
+	/**
+	 * This method performs the case 3 calculations.
+	 * @param material Material whose properties are been treated
+	 * @param property The property to treat
+	 * @param maxLs The maximum Ls value found in the library.
+	 * @return The Stringency Level related to this property.
+	 */
+	private double case3Calculation(Material material, String property, double maxLs) {
+		String propertyValue = material.getPropertyValue(property);
+		
+		if (GUIGeneralMethods.isNumeric(propertyValue)) {
+			double valueLs = Double.parseDouble(propertyValue);
+			double resultSL = 5.0 * valueLs / maxLs;
+			resultSL = resultSL < 1.0 ? 1.0 : resultSL;
+			resultSL = resultSL > 5.0 ? 5.0 : resultSL;
+			
+			return resultSL;
+			
+		} else {	//If requirement is not specified or is not a number
+			return 1.0;		
+		}
 	}
 }
 

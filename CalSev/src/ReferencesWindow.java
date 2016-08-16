@@ -10,19 +10,19 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
-public class AboutCalSevWindow extends JDialog {
+public class ReferencesWindow extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JButton okButton;
 	private JPanel buttonPanel;
-	private JLabel aboutInfoLabel;
+	private JLabel referencesInfoLabel;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			AboutCalSevWindow dialog = new AboutCalSevWindow();
+			ReferencesWindow dialog = new ReferencesWindow();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -33,13 +33,13 @@ public class AboutCalSevWindow extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public AboutCalSevWindow() {
+	public ReferencesWindow() {
 		//General dialog appearance
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setTitle(Constants.C_ABOUT_WINDOW_TITLE);
+		setTitle(Constants.C_REFERENCES_WINDOW_TITLE);
 		setResizable(false);
-		setBounds(Constants.C_ABOUT_PREFERED_POSITION_X_AT_START, Constants.C_ABOUT_PREFERED_POSITION_Y_AT_START, 
-				Constants.C_ABOUT_PREFERED_SIZE_X, Constants.C_ABOUT_PREFERED_SIZE_Y);
+		setBounds(Constants.C_REFERENCES_PREFERED_POSITION_X_AT_START, Constants.C_REFERENCES_PREFERED_POSITION_Y_AT_START, 
+				Constants.C_REFERENCES_PREFERED_SIZE_X, Constants.C_REFERENCES_PREFERED_SIZE_Y);
 		getContentPane().setLayout(new BorderLayout());
 		
 		//Information panel
@@ -47,8 +47,8 @@ public class AboutCalSevWindow extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
-			aboutInfoLabel = new JLabel(Constants.C_ABOUT_INFO);
-			contentPanel.add(aboutInfoLabel, BorderLayout.CENTER);
+			referencesInfoLabel = new JLabel(Constants.C_REFERENCES_INFO);
+			contentPanel.add(referencesInfoLabel, BorderLayout.CENTER);
 		}
 		
 		//Button panel

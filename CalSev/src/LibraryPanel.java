@@ -1,34 +1,31 @@
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.JList;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.event.ListSelectionEvent;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.BorderLayout;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -199,7 +196,7 @@ public class LibraryPanel extends JPanel {
 			materialPropertiesTable = new JTable() {
 				public boolean isCellEditable(int row,int column) {
 					switch(column){             
-			        	case 0:  // select the cell you want make it not editable 
+			        	case 0:  // select the cell you want to make not editable 
 			        		return false;  
 			        	default: return true;
 			        }  
@@ -433,11 +430,16 @@ public class LibraryPanel extends JPanel {
 	 */
 	private void showMaterialData(Material selectedMaterial) {
 		List<String> columns = new ArrayList<String>();
-
-        columns.add(Constants.C_PROPERTY_COLUMN);
-        columns.add(Constants.C_VALUE_COLUMN);
         
-        TableModel tableModel = new DefaultTableModel(selectedMaterial.getPropertiesAndValues().toArray(new Object[][] {}),
+		//Remove name property
+        List<String[]> materialProperties = selectedMaterial.getPropertiesAndValues();
+        materialProperties.remove(0);
+
+        //Set property table
+        columns.add(Constants.C_PROPERTY_COLUMN);
+        columns.add(Constants.C_CHEMICAL_SL_VALUE_COLUMN);
+        
+        TableModel tableModel = new DefaultTableModel(materialProperties.toArray(new Object[][] {}),
         		columns.toArray());
 		materialPropertiesTable.setModel(tableModel);
 	}

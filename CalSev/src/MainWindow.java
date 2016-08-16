@@ -1,20 +1,19 @@
-import java.awt.EventQueue;
 import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Locale;
 
 import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
-import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import java.io.IOException;
-
-import java.net.URISyntaxException;
-import java.net.URL;
+import javax.swing.JTabbedPane;
 
 /**
  * @author david.merayo
@@ -34,6 +33,8 @@ public class MainWindow {
 	private JMenuItem menuItemExit;
 	private JMenuItem menuItemHelp;
 	private JMenuItem menuItemAbout;
+	private JMenuItem menuItemReferences;
+	private JPanel panelDecision;
 	
 	/**
 	 * Launch the application.
@@ -43,12 +44,13 @@ public class MainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					Locale.setDefault(new Locale("en", "US"));
 					MainWindow window = new MainWindow();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, Constants.C_GLOBAL_ERROR, Constants.C_ERROR_DIALOG_TITLE,
 							JOptionPane.ERROR_MESSAGE); 
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		});
@@ -76,8 +78,12 @@ public class MainWindow {
 		mainTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(mainTabbedPane, BorderLayout.CENTER);
 		
+		panelDecision = new DecisionPanel();
+		mainTabbedPane.addTab(Constants.C_TAB_DECISION_TITLE, null, panelDecision, null);
+		
 		panelCalculation = new CalculationPanel();
 		mainTabbedPane.addTab(Constants.C_TAB_CALCULATION_TITLE, null, panelCalculation, null);
+		
 		panelLibrary = new LibraryPanel();
 		mainTabbedPane.addTab(Constants.C_TAB_LIBRARY_TITLE, null, panelLibrary, null);
 		
@@ -122,6 +128,14 @@ public class MainWindow {
 			}
 		});
 		menuHelp.add(menuItemAbout);
+		
+		menuItemReferences = new JMenuItem(Constants.C_HELP_ITEM_REFERENCES_TITLE);
+		menuItemReferences.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				actionOnClicReferences();
+			}
+		});
+		menuHelp.add(menuItemReferences);
 	}
 	
 	/**
@@ -134,11 +148,10 @@ public class MainWindow {
 	
 	/**
 	 * Action executed when the Help menu-item is clicked.
-	 * TODO Add a relevant help web-site
 	 */
 	private void actionOnClicHelp() {
 		try {
-			GUIGeneralMethods.openWebPage(new URL("www.microsiervos.com/"));
+			GUIGeneralMethods.openWebPage(new URL(Constants.C_HELPING_URL));
 		} catch (URISyntaxException | IOException e) {
 			JOptionPane.showMessageDialog(frame, Constants.C_ERROR_WHILE_BROWSING_HELP, Constants.C_ERROR_DIALOG_TITLE,
 					JOptionPane.ERROR_MESSAGE); 
@@ -152,6 +165,16 @@ public class MainWindow {
 	private void actionOnClicAbout() {
 		AboutCalSevWindow aboutWin = new AboutCalSevWindow();
 		aboutWin.setVisible(true);
+	}
+	
+
+	
+	/**
+	 * Action executed when the References menu-item is clicked.
+	 */
+	private void actionOnClicReferences() {
+		ReferencesWindow refWin = new ReferencesWindow();
+		refWin.setVisible(true);
 	}
 
 }

@@ -16,7 +16,6 @@ public class Material {
 	/**
 	 * This method creates a new material.
 	 * @param materialName The new material name.
-	 * TODO add by-default properties.
 	 */
 	public Material(String materialName) {
 		properties = new LinkedHashMap<String, String>();
